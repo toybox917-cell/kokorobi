@@ -319,12 +319,26 @@
         <p class="meta">※デモ版。準備中</p>
       </div>
       <aside class="panel">
-        <h3 style="margin-top:0;">運用のヒント</h3>
-        <ul>
-          <li>トップは“今日の宙天気”固定。更新はブログで。</li>
-          <li>毎週1本、深掘りの読み物（相性・季節・五行特集）。</li>
-          <li>SNSは「#心灯占い」「#宙のリズム」で横展開。</li>
-        </ul>
+        <h3 style="margin-top:0;">今日の灯</h3>
+<p id="daily-message" class="meta">読み込み中…</p>
+
+<script>
+(async function(){
+  // https://gist.github.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5#file-daily-message-txt
+  const GIST_RAW_URL = 'https://gist.githubusercontent.com/toybox917-cell/..................../raw/daily-message.txt';
+  try {
+    const res = await fetch(GIST_RAW_URL + '?t=' + Date.now(), {cache: 'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = (await res.text()).trim();
+    document.getElementById('daily-message').innerHTML =
+      text ? text.replace(/\n/g, '<br>') : '（本日の灯は準備中です）';
+  } catch (e) {
+    document.getElementById('daily-message').textContent =
+      '（通信が混み合っています。少し待って再読み込みしてください）';
+  }
+})();
+</script>
+
       </aside>
     </div>
   </section>
