@@ -1,72 +1,73 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>心灯｜index.html 自動生成ツール</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>心灯｜index.html 自動生成ツール（安定版）</title>
 <style>
-  body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#fafafa;color:#333;margin:0;padding:2em}
-  h1{text-align:center;margin:0 0 .5em}
-  .bar{display:flex;gap:.75em;flex-wrap:wrap;justify-content:center;margin:0 auto 1em}
-  .bar>div{display:flex;align-items:center;gap:.5em}
-  label{font-weight:bold}
-  input[type="date"],select{padding:.45em .65em;border:1px solid #ccc;border-radius:8px}
-  button{background:#b48ef7;border:none;color:#fff;padding:.7em 1.2em;border-radius:10px;cursor:pointer;font-size:1rem}
-  button:hover{background:#9a77f2}
-  textarea{width:100%;height:420px;margin-top:1em;padding:1em;border:1px solid #ccc;border-radius:10px;background:#fff;font-size:.9rem;white-space:pre}
-  small{display:block;text-align:center;color:#666;margin-top:.5em}
-  .hint{max-width:900px;margin:0 auto 1.25em;color:#555;font-size:.9em;text-align:center}
+  body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;margin:0;background:#fafafa;color:#333}
+  header{padding:20px 16px;text-align:center;background:#fff;border-bottom:1px solid #eee}
+  main{max-width:920px;margin:20px auto;padding:0 16px}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+  input[type="date"],select{padding:.5em .7em;border:1px solid #ccc;border-radius:8px}
+  button{background:#8257e6;color:#fff;border:none;border-radius:10px;padding:.7em 1.2em;cursor:pointer}
+  button:hover{background:#6e47de}
+  textarea{width:100%;height:440px;border:1px solid #ddd;border-radius:10px;padding:10px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  small{color:#666}
 </style>
 </head>
 <body>
+<header>
+  <h1 style="margin:0">🌙 心灯｜index.html 自動生成ツール</h1>
+  <p style="margin:.3em 0 0;color:#555">ボタンを押すと下のテキストエリアに <b>index.html</b> が出ます（自動コピー付き）</p>
+</header>
 
-<h1>🌙 心灯｜index.html 自動生成ツール</h1>
-
-<div class="bar">
-  <div><label>日付：</label><input type="date" id="dateInput"></div>
-  <div><label>季節テーマ：</label>
-    <select id="seasonSelect">
-      <option value="auto" selected>自動（推奨）</option>
-      <option value="spring">春</option>
-      <option value="summer">夏</option>
-      <option value="autumn">秋</option>
-      <option value="winter">冬</option>
-    </select>
+<main>
+  <div class="bar">
+    <label>日付：<input type="date" id="dateInput"></label>
+    <label>季節： 
+      <select id="season">
+        <option value="auto" selected>自動（推奨）</option>
+        <option value="spring">春</option>
+        <option value="summer">夏</option>
+        <option value="autumn">秋</option>
+        <option value="winter">冬</option>
+      </select>
+    </label>
+    <button id="genBtn" type="button">✨ index.html を生成してコピー</button>
   </div>
-  <div><button onclick="generate()">✨ index.html を生成してコピー</button></div>
-</div>
 
-<p class="hint">
-干支・月齢・季節テーマ・Gistリンク・ランキングを自動生成します。<br>
-コピーされたHTMLを <b>index.html</b> に貼り付けて Commit すれば公開完了です。
-</p>
-
-<textarea id="output" readonly placeholder="ここに生成された index.html が表示されます"></textarea>
+  <textarea id="out" placeholder="ここに生成された index.html が表示されます"></textarea>
+  <p><small>※ コピーに失敗した場合は、この枠の中身を全選択してコピーしてください。</small></p>
+</main>
 
 <script>
-// 干支算出
+// 初期日付セット（JSTの今日）
+(function(){const d=new Date();const pad=n=>String(n).padStart(2,"0");document.getElementById('dateInput').value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;})();
+
+// 干支（簡略・安定）
 const STEMS=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 const BRANCHES=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 function jdn(y,m,d){const a=Math.floor((14-m)/12);y=y+4800-a;m=m+12*a-3;return d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;}
-function sexagenary(y,m,d){const jd=jdn(y,m,d);return STEMS[(jd+9)%10]+BRANCHES[(jd+1)%12];}
+function etoOf(y,m,d){const jd=jdn(y,m,d);return STEMS[(jd+9)%10]+BRANCHES[(jd+1)%12];}
 
-// 月齢（簡易）
-function moonPhase(date){
+// 月（絵文字のみ・安定）
+function moonEmoji(date){
   const syn=29.530588853;
   const base=new Date(Date.UTC(2000,0,6,18,14));
   const diff=(date-base)/86400000;
-  const phase=((diff%syn)+syn)%syn;
-  if(phase<1.5)return"🌑";
-  if(phase<6)return"🌒";
-  if(phase<8)return"🌓";
-  if(phase<14)return"🌔";
-  if(phase<16)return"🌕";
-  if(phase<21)return"🌖";
-  if(phase<23)return"🌗";
+  const ph=((diff%syn)+syn)%syn;
+  if(ph<1.5)return"🌑";
+  if(ph<6)return"🌒";
+  if(ph<8)return"🌓";
+  if(ph<14)return"🌔";
+  if(ph<16)return"🌕";
+  if(ph<21)return"🌖";
+  if(ph<23)return"🌗";
   return"🌘";
 }
 
-// Gistリンク
+// Gist（内容データ）
 const GIST={
   daily:"https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
@@ -80,68 +81,99 @@ const GIST={
   ]
 };
 
-// 生成処理
-function generate(){
-  const raw=document.getElementById("dateInput").value;
-  const date=raw?new Date(raw+"T00:00:00"):new Date();
-  const wdays=["日","月","火","水","木","金","土"];
-  const w=wdays[date.getDay()];
-  const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
-  const eto=sexagenary(y,m,d);
-  const moon=moonPhase(date);
-  const seasonSel=document.getElementById("seasonSelect").value;
-  const season=seasonSel==="auto"?(m>=3&&m<=5?"spring":m>=6&&m<=8?"summer":m>=9&&m<=11?"autumn":"winter"):seasonSel;
-  const accent={spring:"#b48ef7",summer:"#33a1ff",autumn:"#cc7a42",winter:"#6a8fbf"}[season];
+// 季節色
+function seasonAccent(m,sel){
+  const key = sel==="auto" ? (m>=3&&m<=5?"spring":m>=6&&m<=8?"summer":m>=9&&m<=11?"autumn":"winter") : sel;
+  return ({spring:"#b48ef7",summer:"#33a1ff",autumn:"#cc7a42",winter:"#6a8fbf"})[key];
+}
 
-  const html=`<!DOCTYPE html>
-<html lang="ja"><head>
+// index.html の生成
+function buildHTML(dateStr, seasonSel){
+  const d = dateStr ? new Date(dateStr+"T00:00:00") : new Date();
+  const y=d.getFullYear(), m=d.getMonth()+1, dd=d.getDate();
+  const w=["日","月","火","水","木","金","土"][d.getDay()];
+  const eto=etoOf(y,m,dd);
+  const moon=moonEmoji(d);
+  const accent=seasonAccent(m, seasonSel);
+
+  return `<!DOCTYPE html>
+<html lang="ja">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>心灯｜宙のリズム占い</title>
 <meta name="description" content="理で導き、やさしさで包む——毎日の“宙の天気”とメッセージを配信。">
 <meta property="og:image" content="https://kokorobi.vercel.app/og.png">
 <style>
-body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#0a0a12;color:#eee;margin:0}
-header{text-align:center;padding:2em;background:linear-gradient(135deg,${accent},#fff);}
-section{max-width:720px;margin:2em auto;padding:1.5em;background:#12121a;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
-h2{border-left:6px solid ${accent};padding-left:.5em;font-size:1.1em;}
-.loading{text-align:center;color:#999;}
-footer{text-align:center;font-size:.8em;color:#aaa;margin:2em 0;}
-</style></head>
+  body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#0a0a12;color:#eee;margin:0}
+  header{text-align:center;padding:2em;background:linear-gradient(135deg,${accent},#ffffff)}
+  main{max-width:760px;margin:2em auto;padding:0 16px}
+  section{background:#12121a;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.35);padding:16px;margin:14px 0}
+  h2{border-left:6px solid ${accent};padding-left:.5em;font-size:1.05rem;margin:.2em 0 .6em}
+  .loading{color:#999}
+  footer{text-align:center;color:#aaa;font-size:.85em;margin:2em 0}
+</style>
+</head>
 <body>
 <header>
-<h1>心灯｜宙のリズム占い</h1>
-<p>${y}年${m}月${d}日（${w}）　干支日：${eto}</p>
-<p>今夜の月：${moon}</p>
+  <h1>心灯｜宙のリズム占い</h1>
+  <p>${y}年${m}月${dd}日（${w}）　干支日：${eto}　今夜の月：${moon}</p>
 </header>
 <main>
-<section><h2>🌕 今日の灯</h2><div id="daily" class="loading">読み込み中...</div></section>
-<section><h2>🌤 宙の天気</h2><div id="weather" class="loading">読み込み中...</div></section>
-<section><h2>🔮 三大運トピック</h2><div id="topics" class="loading">読み込み中...</div></section>
-<section><h2>🍀 クイック開運</h2><div id="lucky" class="loading">読み込み中...</div></section>
-<section><h2>🐉 干支ランキング</h2><div id="ranking" class="loading">読み込み中...</div></section>
-<section><h2>💫 心の調律ノート</h2><div id="blogs" class="loading">読み込み中...</div></section>
+  <section><h2>🌕 今日の灯</h2><div id="daily" class="loading">読み込み中...</div></section>
+  <section><h2>🌤 宙の天気（干支×五行）</h2><div id="weather" class="loading">読み込み中...</div></section>
+  <section><h2>🔮 三大運トピック</h2><div id="topics" class="loading">読み込み中...</div></section>
+  <section><h2>🍀 クイック開運パネル</h2><div id="lucky" class="loading">読み込み中...</div></section>
+  <section><h2>🐉 干支ランキング</h2><div id="ranking" class="loading">読み込み中...</div></section>
+  <section><h2>💫 心の調律ノート</h2><div id="blogs" class="loading">読み込み中...</div></section>
 </main>
 <footer>© 心灯 – 宙のリズム占い</footer>
 <script>
-async function load(id,url){try{const r=await fetch(url);if(!r.ok)throw 0;document.getElementById(id).innerHTML=await r.text();}catch{document.getElementById(id).innerText='⚠️ 読み込み失敗';}}
+async function load(id,url){try{const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw 0;document.getElementById(id).innerHTML=await r.text();}catch{document.getElementById(id).textContent="⚠️ 読み込みできませんでした";}}
 load("daily","${GIST.daily}");
 load("weather","${GIST.weather}");
 load("topics","${GIST.topics}");
 load("lucky","${GIST.lucky}");
 load("ranking","${GIST.ranking}");
-(async()=>{let html='';for(const u of ${JSON.stringify(GIST.blogs)}){try{const r=await fetch(u);const t=await r.text();const [h,...b]=t.split("\\n");html+=\`<article><h3>\${h}</h3><p>\${b.join("<br>")}</p></article>\`; }catch{}}document.getElementById('blogs').innerHTML=html||'記事準備中';})();
+(async()=>{let html="";for(const u of ${JSON.stringify(GIST.blogs)}){try{const r=await fetch(u,{cache:"no-store"});const t=await r.text();const [h,...b]=t.split("\\n");html+=\`<article style="margin-bottom:1em"><h3 style="margin:.2em 0;color:#c7b6ff">\${h||"無題"}</h3><p style="margin:0">\${b.join("<br>")}</p></article>\`;}catch{}}document.getElementById("blogs").innerHTML=html||"（記事準備中）";})();
 </script>
-</body></html>`;
-
-  const out=document.getElementById("output");
-  out.value=html;
-  out.select();
-  document.execCommand("copy");
-  alert("✅ index.html をコピーしました！ GitHubで貼り付けてCommitすれば完了です。");
+</body>
+</html>`;
 }
 
-// デフォルト日付セット
-(function(){const d=new Date(),pad=n=>String(n).padStart(2,"0");document.getElementById("dateInput").value=\`\${d.getFullYear()}-\${pad(d.getMonth()+1)}-\${pad(d.getDate())}\`;})();
+// クリップボード（iPhone対策つき）
+async function copyText(text){
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  }catch(e){}
+  // フォールバック
+  try{
+    const ta=document.createElement("textarea");
+    ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok=document.execCommand("copy"); document.body.removeChild(ta);
+    return ok;
+  }catch(e){ return false; }
+}
+
+// ボタンイベント（必ず反応）
+document.getElementById("genBtn").addEventListener("click", async ()=>{
+  try{
+    const dateStr=document.getElementById("dateInput").value;
+    const season=document.getElementById("season").value;
+    const html=buildHTML(dateStr, season);
+    const out=document.getElementById("out");
+    out.value = html; // まず画面に確実に出す
+    const ok = await copyText(html);
+    alert(ok ? "✅ 生成＆コピー完了！\n→ index.html に全貼り替えして Commit してください。" 
+             : "✅ 生成OK！\n❕ コピーに失敗したので、枠の中身を手動でコピーしてください。");
+  }catch(err){
+    console.error(err);
+    alert("❌ 生成に失敗しました（ネットワーク/ブラウザ制限の可能性）。表示されたエラーを教えてください。");
+  }
+});
 </script>
 </body>
 </html>
