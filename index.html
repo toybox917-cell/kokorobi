@@ -1,381 +1,127 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>心灯（こころび）｜宙のリズム占い</title>
-  <meta name="description" content="心灯（こころび）は、干支×五行と“心のリズム”を調律する、やさしい宙の占い。毎日の宙天気と干支ランキングで、理で導き、やさしさで包む一日を。">
-  <meta property="og:title" content="心灯（こころび）｜宙のリズム占い">
-  <meta property="og:description" content="干支×五行で“宙のリズム”を読み、今日の可能性をひらく。">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8' standalone='no'?><svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'><rect width='100%' height='100%' fill='%231a2038'/><circle cx='900' cy='200' r='120' fill='%23f1dba6'/><text x='80' y='350' font-size='64' fill='white' font-family='Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif'>心灯｜宙のリズム占い</text></svg>">
-  <meta name="theme-color" content="#1a2038">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs/%3E%3Crect width='64' height='64' rx='12' fill='%231a2038'/%3E%3Ccircle cx='44' cy='18' r='10' fill='%23f1dba6'/%3E%3Cpath d='M12 40c8 8 32 8 40 0' stroke='%23a8f5df' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cpath d='M20 30c6 6 18 6 24 0' stroke='%23c6d3ff' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心灯｜宙のリズム占い</title>
   <style>
-    /* ===== Design System ===== */
-    *, *::before, *::after { box-sizing: border-box; }
-    :root {
-      --bg:#0d1226;
-      --bg2:#141a33;
-      --ink:#eaf0ff;
-      --muted:#a9b4d6;
-      --accent:#f1dba6;   /* warm moon */
-      --accent2:#a8f5df;  /* soft mint */
-      --line:#2a335a;
-      --card:#121735;
-      --good:#a8f5df;
-      --warn:#ffd0a6;
-    }
-    html, body { height:100%; }
-    body {
-      margin:0; color:var(--ink);
-      font-family: -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;
-      background:
-        radial-gradient(1000px 500px at 90% -10%, #1c2350 0%, var(--bg) 40%),
-        radial-gradient(800px 300px at 10% 120%, #101633 0%, var(--bg) 70%),
-        var(--bg);
-      line-height:1.65;
-      letter-spacing:.02em;
-    }
-    a { color: inherit; text-decoration: none; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    header { position: sticky; top:0; backdrop-filter: blur(10px); background: rgba(13,18,38,.6); border-bottom: 1px solid var(--line); z-index: 40; }
-    .nav { display:flex; align-items:center; justify-content:space-between; padding: 14px 0; }
-    .brand { font-weight: 800; letter-spacing:.03em; display:flex; align-items:center; gap:10px; }
-    .brand .logo { width:28px; height:28px; border-radius:8px; background: conic-gradient(from 40deg, #101633, #1a2038); position: relative; }
-    .brand .logo::before { content:""; position:absolute; right:0; top:2px; width:10px; height:10px; background:var(--accent); border-radius:999px; box-shadow:0 0 16px rgba(241,219,166,.5); }
-    nav a { font-size:14px; color:var(--muted); margin-left: 18px; }
-    /* Hero */
-    .hero { padding: 70px 0 40px; }
-    .hero .grid { display:grid; grid-template-columns: 1.25fr .75fr; gap: 24px; }
-    .badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background: rgba(168,245,223,.08); font-size:12px; }
-    .title { font-size: clamp(28px, 4vw, 46px); line-height:1.18; margin: 12px 0 4px; }
-    .subtitle { color:var(--muted); margin-bottom: 16px; }
-    .cta-row { display:flex; gap:12px; flex-wrap:wrap; }
-    .btn { display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius: 12px; border:1px solid transparent; font-weight:700; cursor:pointer; }
-    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#0b0f1f; }
-    .btn.ghost { background: rgba(20,26,51,.4); border-color: var(--line); color: var(--ink); }
-    .panel { background: var(--card); border:1px solid var(--line); border-radius: 16px; padding: 18px; }
-    /* Sections */
-    .section { padding: 44px 0; }
-    h2 { font-size: clamp(22px, 2.6vw, 30px); margin: 0 0 14px; }
-    .meta { color:var(--muted); font-size:14px; }
-    /* Ranking */
-    .rank-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap:12px; }
-    .rank-item { background: var(--card); border:1px solid var(--line); border-radius: 12px; padding: 14px; }
-    .rank-item .no { font-weight:800; color:var(--accent2); }
-    /* Two columns */
-    .twocol { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-    /* Table */
-    table { width:100%; border-collapse: collapse; }
-    th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align:left; }
-    th { color:var(--muted); font-weight:600; width: 34%; }
-    /* Cards */
-    .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .card { background: var(--card); border:1px solid var(--line); border-radius: 12px; padding: 14px; }
-    .pill { display:inline-block; padding: 2px 8px; border:1px solid var(--line); border-radius:999px; font-size:12px; color:var(--muted); }
-    /* Footer */
-    footer { border-top:1px solid var(--line); color:var(--muted); font-size:13px; padding: 28px 0; }
-    /* Responsive */
-    @media (max-width: 1000px) {
-      .hero .grid { grid-template-columns: 1fr; }
-      .cards { grid-template-columns: 1fr; }
-      .twocol { grid-template-columns: 1fr; }
-    }
+    body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; background: #fafafa; color: #333; margin: 0; }
+    header { text-align: center; padding: 2em 1em; background: linear-gradient(135deg, #aee1f9, #f6d6ff); }
+    header h1 { margin: 0; font-size: 2em; color: #222; }
+    header p { margin: 0.5em 0 0; font-size: 0.9em; color: #555; }
+
+    section { max-width: 720px; margin: 2em auto; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    section h2 { border-left: 6px solid #b48ef7; padding-left: 0.5em; font-size: 1.3em; color: #444; }
+
+    .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .rank-item { border: 1px solid #eee; border-radius: 10px; padding: 0.6em; background: #fdfcff; }
+    .rank-item .no { font-weight: bold; color: #6a4fbf; }
+    .meta { font-size: 0.8em; color: #555; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #eee; padding: 0.5em; text-align: left; }
+    th { background: #f3f0fa; width: 30%; }
+
+    footer { text-align: center; font-size: 0.8em; color: #666; margin: 3em 0 2em; }
+    .loading { text-align: center; color: #aaa; font-size: 0.9em; }
   </style>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "心灯（こころび）｜宙のリズム占い",
-    "url": "https://example.com/",
-    "description": "干支×五行×心のリズムで今日の可能性をひらく占い。",
-    "inLanguage": "ja"
-  }
-  </script>
 </head>
 <body>
+
 <header>
-  <div class="wrap nav" role="navigation" aria-label="primary">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div>心灯 <span style="opacity:.8;">— 宙のリズム占い —</span></div>
-    </div>
-    <nav>
-      <a href="#today">今日の宙天気</a>
-      <a href="#ranking">干支ランキング</a>
-      <a href="#blog">心の調律ノート</a>
-      <a href="#about">心灯とは</a>
-      <a href="#contact">お問い合わせ</a>
-    </nav>
-  </div>
+  <h1>心灯｜宙のリズム占い</h1>
+  <p>理で導き、やさしさで包む — 才田流・心の調律</p>
 </header>
 
 <main>
-  <!-- Hero -->
-  <section class="hero">
-    <div class="wrap">
-      <div class="grid">
-        <div>
-          <span class="badge">今日の宙リズム <span id="today-date">2025年10月25日</span></span>
-          <h1 class="title">あなたの心に、<br>今日という星の灯を。</h1>
-          <p class="subtitle">干支×五行と“心のリズム”で、未来を決めつけず、可能性をひらく。<br>理で導き、やさしさで包む——それが心灯（こころび）の占いです。</p>
-          <div class="cta-row">
-            <a class="btn primary" href="#today">今日の結果を見る</a>
-            <a class="btn ghost" href="#subscribe">無料購読する</a>
-          </div>
-        </div>
-        <aside class="panel" aria-labelledby="astro-weather">
-          <h3 id="astro-weather" style="margin:0 0 10px;">宙の天気（干支×五行）</h3>
-          <table>
-            <tr><th>総テーマ</th><td>仕上げと調整。結果より「余白の美」。</td></tr>
-            <tr><th>キーワード</th><td>微調整／バトンパス／水に浮かべる</td></tr>
-            <tr><th>ラッキータイム</th><td>15:00–17:00</td></tr>
-            <tr><th>開運アクション</th><td>やることを3つに絞る（片づけ／連絡／ご褒美）</td></tr>
-          </table>
-          <p class="meta">※本日の宙リズムは“可能性ベース”のガイドです。やさしく微調整しましょう。</p>
-        </aside>
-      </div>
-    </div>
+  <section id="daily">
+    <h2>🌕 今日の灯</h2>
+    <div id="daily-content" class="loading">読み込み中...</div>
   </section>
 
-  <!-- Today -->
-  <section id="today" class="section">
-    <div class="wrap twocol">
-      <div>
-        <h2>今日のメッセージ</h2>
-        <p>仕上げは“優しさ”で。あなたの最後のひと磨きが、誰かの一日を明るくします。</p>
-        <div class="panel">
-          <h3 style="margin:0 0 8px;">三大運トピック</h3>
-          <ul>
-            <li><strong>恋愛：</strong>言葉を減らして“間”を増やす。相手の一言を繰り返して受け止めると距離が縮む。</li>
-            <li><strong>仕事：</strong>未完のタスクを <strong>70％→90％</strong> へ。最終チェックリストが勝負。</li>
-            <li><strong>金運：</strong>小口の見直しが効く日。サブスク整理／ポイント活用◎。</li>
-          </ul>
-        </div>
-      </div>
-      <aside class="panel">
-        <h3 style="margin-top:0;">クイック開運パネル</h3>
-        <table>
-          <tr><th>カラー</th><td>群青×ミント×月の金</td></tr>
-          <tr><th>フード</th><td>温かいスープ・紅茶・和菓子ひと口</td></tr>
-          <tr><th>音</th><td>環境音（雨／波／扇風機）を10分</td></tr>
-          <tr><th>香</th><td>ボタニカル系（ローズマリー or ティーツリー）</td></tr>
-          <tr><th>言霊</th><td>理で導き、やさしさで包む</td></tr>
-        </table>
-      </aside>
-    </div>
+  <section id="weather">
+    <h2>🌤 宙の天気（干支×五行）</h2>
+    <div id="weather-content" class="loading">読み込み中...</div>
   </section>
 
-  <!-- Ranking -->
-  <section id="ranking" class="section">
-    <div class="wrap">
-      <h2>干支ランキング</h2>
-      <p class="meta">気流（五行配分）×各干支の相性から算出した“可能性ベース”の指標です。</p>
-      <div class="rank-grid">
-        
-        <article class="rank-item">
-          <div class="no">#1 子（ね）</div>
-          <p>小さな整頓が大飛躍に直結。連絡一本で道が開く。</p>
-          <p class="meta">ラッキー：チェックリスト／炭酸水／ネイビー</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#2 辰（たつ）</div>
-          <p>温めてきた企画をそっと世に出すと好反応。</p>
-          <p class="meta">ラッキー：下書き→公開／白いシャツ</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#3 申（さる）</div>
-          <p>橋渡し役で評価UP。第三者紹介が吉。</p>
-          <p class="meta">ラッキー：名刺・プロフィール整備／グレー</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#4 酉（とり）</div>
-          <p>“最後のひと磨き”で完成度が跳ねる日。</p>
-          <p class="meta">ラッキー：クロスで拭く／メタリック小物</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#5 丑（うし）</div>
-          <p>腰を据えるほど効率化。道具の手入れ◎。</p>
-          <p class="meta">ラッキー：作業用手袋／ブラウン</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#6 卯（うさぎ）</div>
-          <p>静かな場所で集中力MAX。通知オフが勝ち筋。</p>
-          <p class="meta">ラッキー：図書館の隅／ミント</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#7 亥（いのしし）</div>
-          <p>直球よりワンクッションが吉。下見・予告編を。</p>
-          <p class="meta">ラッキー：試供・サンプル／ボルドー</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#8 寅（とら）</div>
-          <p>主導権は握りつつ、着地はソフトに。</p>
-          <p class="meta">ラッキー：アロマミスト／ブラック</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#9 未（ひつじ）</div>
-          <p>頼まれごとは“できる範囲”宣言で信頼UP。</p>
-          <p class="meta">ラッキー：付箋／ライトベージュ</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#10 巳（へび）</div>
-          <p>洞察は鋭いが言い過ぎ注意。クッション言葉を。</p>
-          <p class="meta">ラッキー：“もしよければ”／ボタニカル柄</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#11 午（うま）</div>
-          <p>予定を詰め過ぎない。1件減らして調和回復。</p>
-          <p class="meta">ラッキー：スニーカー／ターコイズ</p>
-        </article>
-        <article class="rank-item">
-          <div class="no">#12 戌（いぬ）</div>
-          <p>優しさが空回りしやすい。先に充電→夕方挽回。</p>
-          <p class="meta">ラッキー：甘い紅茶／アイボリー</p>
-        </article>
-      </div>
-    </div>
+  <section id="topics">
+    <h2>🔮 三大運トピック</h2>
+    <ul id="topics-content" class="loading"></ul>
   </section>
 
-  <!-- Blog / Journal -->
-  <section id="blog" class="section">
-    <div class="wrap twocol">
-      <div>
-        <h2>心の調律ノート（ブログ）</h2>
-        <div class="cards">
-          <article class="card">
-            <div class="pill">読み物</div>
-            <h3 style="margin:8px 0;">宙のリズムって何？——干支×五行×心</h3>
-            <p class="meta">“予言”ではなく“選択肢”を増やすための読み方。</p>
-          </article>
-          <article class="card">
-            <div class="pill">実践</div>
-            <h3 style="margin:8px 0;">1日3つで整える：片づけ／連絡／ご褒美</h3>
-            <p class="meta">小さな輪で運をまわす、心灯の基本軸。</p>
-          </article>
-          <article class="card">
-            <div class="pill">相性</div>
-            <h3 style="margin:8px 0;">申×子は“橋渡し最強”——使い方ガイド</h3>
-            <p class="meta">人と人をつないで福を呼ぶ具体例。</p>
-          </article>
-        </div>
-      </div>
-      <aside class="panel" id="subscribe" aria-labelledby="sub-head">
-        <h3 id="sub-head" style="margin-top:0;">無料購読</h3>
-        <p class="meta">毎朝「今日の宙天気」と干支ランキングをメールでお届けします。</p>
-        <form onsubmit="event.preventDefault(); alert('ありがとうございます！購読リストに仮登録しました。');">
-          <label for="email">メールアドレス</label><br>
-          <input id="email" type="email" required placeholder="you@example.com" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background: #0e1330; color: var(--ink); margin:6px 0 12px;">
-          <button class="btn primary" type="submit">購読する</button>
-        </form>
-        <p class="meta">※デモ版。準備中</p>
-      </aside>
-    </div>
+  <section id="lucky">
+    <h2>🍀 クイック開運パネル</h2>
+    <table id="lucky-content" class="loading"></table>
   </section>
 
-  <!-- About -->
-  <section id="about" class="section">
-    <div class="wrap twocol">
-      <div>
-        <h2>心灯（こころび）とは</h2>
-        <p>干支（時間）× 命理（人）× 風水（空間）× 三才（天・地・人）の調和で読み解く、
-        「<strong>理で導き、やさしさで包む</strong>」スタイルの宙占いです。<br>
-        未来を固定せず、今日の選択肢を増やす“可能性ベース”の解釈を大切にします。</p>
-        <div class="panel">
-          <h3 style="margin:0 0 8px;">基本ポリシー</h3>
-          <ul>
-            <li>可能性を示し、選択の自由を尊重する</li>
-            <li>恐怖や不安を煽らない</li>
-            <li>誠実な言葉と、実践できる一手</li>
-          </ul>
-          <p class="meta">免責：本コンテンツはエンターテインメントであり、医療・法律・投資等の助言には該当しません。</p>
-        </div>
-      </div>
-      <aside class="panel">
-        <h3 style="margin-top:0;">ブランドノート</h3>
-        <table>
-          <tr><th>色</th><td>深群青（#1a2038）／月の金（#f1dba6）／ミント光（#a8f5df）</td></tr>
-          <tr><th>モチーフ</th><td>灯・星・波紋・リズム</td></tr>
-          <tr><th>言葉</th><td>「やさしさは、最強の仕上げ。」</td></tr>
-        </table>
-      </aside>
-    </div>
+  <section id="ranking">
+    <h2>🐉 干支ランキング</h2>
+    <div id="ranking-content" class="ranking-grid loading"></div>
   </section>
 
-  <!-- Contact -->
-  <section id="contact" class="section">
-    <div class="wrap twocol">
-      <div>
-        <h2>お問い合わせ</h2>
-        <p>鑑定依頼・コラボ・講演のご相談は下記フォームからどうぞ。</p>
-        <form onsubmit="event.preventDefault(); alert('ありがとうございます！メッセージを受け取りました（デモ）。');">
-          <label for="name">お名前</label><br>
-          <input id="name" type="text" required placeholder="心灯 太郎" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:#0e1330; color:var(--ink); margin:6px 0 12px;">
-          <label for="msg">メッセージ</label><br>
-          <textarea id="msg" rows="5" required placeholder="ご用件をご記入ください" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:#0e1330; color:var(--ink); margin:6px 0 12px;"></textarea>
-          <button class="btn primary" type="submit">送信する</button>
-        </form>
-        <p class="meta">※デモ版。準備中</p>
-      </div>
-      <aside class="panel">
-        <h3 style="margin-top:0;">今日の灯</h3>
-<p id="daily-message" class="meta">読み込み中…</p>
-
-<script>
-(async function(){
-  // https://gist.github.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5#file-daily-message-txt
-  const GIST_RAW_URL = 'https://gist.githubusercontent.com/toybox917-cell/..................../raw/daily-message.txt';
-  try {
-    const res = await fetch(GIST_RAW_URL + '?t=' + Date.now(), {cache: 'no-store'});
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = (await res.text()).trim();
-    document.getElementById('daily-message').innerHTML =
-      text ? text.replace(/\n/g, '<br>') : '（本日の灯は準備中です）';
-  } catch (e) {
-    document.getElementById('daily-message').textContent =
-      '（通信が混み合っています。少し待って再読み込みしてください）';
-  }
-})();
-</script>
-
-      </aside>
-    </div>
+  <section id="blog">
+    <h2>💫 心の調律ノート</h2>
+    <div id="blog-content" class="loading"></div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap">
-    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <span>© 2025 心灯｜宙のリズム占い</span>
-      <span class="meta">— あなたの心に、今日という星の灯を。</span>
-    </div>
-  </div>
+  <p>© 心灯 – 宙のリズム占い / produced by 一輝</p>
 </footer>
 
 <script>
-  // Fallback date render (Safari/iOS safety)
-  (function() {
-    var el = document.getElementById('today-date');
-    if (!el) return;
+const GIST = {
+  daily:  "https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
+  weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
+  topics: "https://gist.githubusercontent.com/toybox917-cell/3499c5dfebf2462208ad234120be087a/raw",
+  lucky:  "https://gist.githubusercontent.com/toybox917-cell/ffbaf45b1edb1c11d2a3e814e76066fa/raw",
+  ranking:"https://gist.githubusercontent.com/toybox917-cell/c344ff836842c63913079d0a3637f1fb/raw",
+  blogs:[
+    "https://gist.githubusercontent.com/toybox917-cell/77f34ebf969517f68d842b7be379b7fa/raw",
+    "https://gist.githubusercontent.com/toybox917-cell/5fedbdbfd6464f26351946495e472eb6/raw",
+    "https://gist.githubusercontent.com/toybox917-cell/435d9bc589b417dcdc4c4e83d0a4b2c2/raw"
+  ]
+};
+
+async function loadContent(id, url, type="text") {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("読み込み失敗");
+    const text = await res.text();
+    document.getElementById(id).innerHTML = text;
+  } catch (err) {
+    document.getElementById(id).innerHTML = `<p style="color:#999;">⚠️ 読み込みできませんでした</p>`;
+  }
+}
+
+// 各Gistの読み込み
+loadContent("daily-content", GIST.daily);
+loadContent("weather-content", GIST.weather);
+loadContent("topics-content", GIST.topics);
+loadContent("lucky-content", GIST.lucky);
+loadContent("ranking-content", GIST.ranking);
+
+// ブログ3件
+(async ()=>{
+  let blogHTML = "";
+  for (let url of GIST.blogs) {
     try {
-      var d = new Date();
-      var y = d.getFullYear();
-      var m = d.getMonth() + 1;
-      var day = d.getDate();
-      el.textContent = y + "年" + m + "月" + day + "日";
-    } catch (e) {}
-  })();
-  // Smooth scroll (accessibility-respecting)
-  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
-    a.addEventListener('click', function(e) {
-      var id = this.getAttribute('href').slice(1);
-      var el = document.getElementById(id);
-      if (!el) return;
-      e.preventDefault();
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
+      const res = await fetch(url);
+      const txt = await res.text();
+      const lines = txt.split("\n");
+      const title = lines[0];
+      const body = lines.slice(1).join("<br>");
+      blogHTML += `<article style="margin-bottom:1.5em;">
+        <h3 style="margin:0 0 .2em;color:#6a4fbf;">${title}</h3>
+        <p style="margin:0;font-size:0.9em;color:#555;">${body}</p>
+      </article>`;
+    } catch {
+      blogHTML += `<p style="color:#999;">⚠️ 読み込みできませんでした</p>`;
+    }
+  }
+  document.getElementById("blog-content").innerHTML = blogHTML;
+})();
 </script>
+
 </body>
 </html>
