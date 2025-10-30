@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心灯｜Gistテンプレート自動生成</title>
+  <style>
+    body { font-family: "Hiragino Sans","Yu Gothic",sans-serif; background:#fafafa; color:#333; margin:0; padding:2em; }
+    h1 { text-align:center; margin-bottom:1em; }
+    section { background:#fff; padding:1.5em; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.05); margin-bottom:2em; }
+    label { font-weight:bold; }
+    textarea { width:100%; height:100px; margin-top:.5em; padding:.5em; font-size:.9em; border-radius:6px; border:1px solid #ccc; }
+    button { display:block; margin:1em auto; padding:.6em 1.2em; background:#b48ef7; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:1em; }
+    button:hover { background:#9a77f2; }
+    pre { background:#f7f7f7; padding:1em; border-radius:8px; overflow:auto; font-size:.9em; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+
+<h1>🌙 心灯｜Gistテンプレート自動生成</h1>
+<section>
+  <label>日付を入力：</label>
+  <input type="date" id="dateInput" value="">
+  <button onclick="generateTemplate()">✨ テンプレートを生成</button>
+</section>
+
+<section>
+  <h2>🕊️ 出力結果</h2>
+  <pre id="output">ここにテンプレートが表示されます</pre>
+</section>
+
+<script>
+function generateTemplate(){
+  const date = document.getElementById("dateInput").value || new Date().toISOString().split('T')[0];
+  const d = new Date(date);
+  const weekdays = ["日","月","火","水","木","金","土"];
+  const jpDate = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${weekdays[d.getDay()]}）`;
+
+  const text = `
+【心灯｜${jpDate}版 テンプレート】
+
+🔮 daily-message.txt
+今日の灯：
+（今日のテーマを2〜3行で）
+
+🌤 today-weather.txt
+総テーマ：
+キーワード：
+五行：
+開運アクション：
+
+🔮 topics.html
+<li><strong>恋愛：</strong></li>
+<li><strong>仕事：</strong></li>
+<li><strong>金運：</strong></li>
+
+🍀 lucky.html
+<tr><th>カラー</th><td></td></tr>
+<tr><th>香り</th><td></td></tr>
+<tr><th>食</th><td></td></tr>
+<tr><th>音</th><td></td></tr>
+<tr><th>言霊</th><td></td></tr>
+
+🐉 ranking.html
+<article class="rank-item"><div class="no">#1 子（ね）</div><p></p><p class="meta"></p></article>
+... #2〜#12 同様に
+
+💫 blog1.txt
+タイトル：
+（本文）
+
+💫 blog2.txt
+タイトル：
+（本文）
+
+💫 blog3.txt
+タイトル：
+（本文）
+`;
+  document.getElementById("output").textContent = text.trim();
+}
+</script>
+
+</body>
+</html>
+
