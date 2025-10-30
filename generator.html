@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>心灯｜index.html 自動生成ツール（月情報×干支×季節×重み×OGP）</title>
+<title>心灯｜index.html 自動生成ツール</title>
 <style>
   body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#fafafa;color:#333;margin:0;padding:2em}
   h1{text-align:center;margin:0 0 .5em}
@@ -25,43 +25,48 @@
 <div class="bar">
   <div><label>日付：</label><input type="date" id="dateInput"></div>
   <div><label>季節テーマ：</label>
-    <select id="seasonSelect" title="月から自動判定（推奨）">
+    <select id="seasonSelect">
       <option value="auto" selected>自動（推奨）</option>
-      <option value="spring">春（3–5月）</option>
-      <option value="summer">夏（6–8月）</option>
-      <option value="autumn">秋（9–11月）</option>
-      <option value="winter">冬（12–2月）</option>
+      <option value="spring">春</option>
+      <option value="summer">夏</option>
+      <option value="autumn">秋</option>
+      <option value="winter">冬</option>
     </select>
   </div>
   <div><button onclick="generate()">✨ index.html を生成してコピー</button></div>
 </div>
 
-<p class="hint">干支日＋季節テーマ＋Gistリンク＋<b>重み付き“日替わり”ランキング</b>＋<b>OGP</b>＋<b>月情報（絵文字＋画像描画）</b>入りの index.html を自動生成します（JST基準）。</p>
+<p class="hint">
+干支・月齢・季節テーマ・Gistリンク・ランキングを自動生成します。<br>
+コピーされたHTMLを <b>index.html</b> に貼り付けて Commit すれば公開完了です。
+</p>
 
 <textarea id="output" readonly placeholder="ここに生成された index.html が表示されます"></textarea>
-<small>※ 月齢は 2000-01-06 18:14 UTC 新月を基準に計算（北半球＝日本の見え方で描画）。</small>
 
 <script>
-/* ===== 干支（完全暦式 JDN） ===== */
+// 干支算出
 const STEMS=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
-const STEM_YOMI=["きのえ","きのと","ひのえ","ひのと","つちのえ","つちのと","かのえ","かのと","みずのえ","みずのと"];
 const BRANCHES=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
-const BRANCH_YOMI=["ね","うし","とら","う","たつ","み","うま","ひつじ","さる","とり","いぬ","い"];
-function jdn(y,m,d){const a=Math.floor((14-m)/2);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
-function sexagenaryOfDay(date){const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();const N=jdn(y,m,d);const si=(N+9)%10, bi=(N+1)%12;return {stem:STEMS[(si+10)%10],branch:BRANCHES[(bi+12)%12],yomistem:STEM_YOMI[(si+10)%10],yomibr:BRANCH_YOMI[(bi+12)%12]};}
+function jdn(y,m,d){const a=Math.floor((14-m)/12);y=y+4800-a;m=m+12*a-3;return d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;}
+function sexagenary(y,m,d){const jd=jdn(y,m,d);return STEMS[(jd+9)%10]+BRANCHES[(jd+1)%12];}
 
-/* ===== 季節テーマ ===== */
-function seasonFromMonth(m){if(m>=3&&m<=5)return"spring"; if(m>=6&&m<=8)return"summer"; if(m>=9&&m<=11)return"autumn"; return"winter";}
-function themeFor(season){
-  return({
-    spring:{gradA:"#fce3ec",gradB:"#e7f7ff",accent:"#b48ef7"},
-    summer:{gradA:"#bfe9ff",gradB:"#ffecd2",accent:"#33a1ff"},
-    autumn:{gradA:"#ffe1c6",gradB:"#f5f0ff",accent:"#cc7a42"},
-    winter:{gradA:"#e8f1ff",gradB:"#f2f6fb",accent:"#6a8fbf"}
-  })[season];
+// 月齢（簡易）
+function moonPhase(date){
+  const syn=29.530588853;
+  const base=new Date(Date.UTC(2000,0,6,18,14));
+  const diff=(date-base)/86400000;
+  const phase=((diff%syn)+syn)%syn;
+  if(phase<1.5)return"🌑";
+  if(phase<6)return"🌒";
+  if(phase<8)return"🌓";
+  if(phase<14)return"🌔";
+  if(phase<16)return"🌕";
+  if(phase<21)return"🌖";
+  if(phase<23)return"🌗";
+  return"🌘";
 }
 
-/* ===== Gist（固定Raw URL） ===== */
+// Gistリンク
 const GIST={
   daily:"https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
@@ -75,166 +80,68 @@ const GIST={
   ]
 };
 
-/* ===== ランキング重み＆シード ===== */
-const ZODIAC_ORDER=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
-const BASE_WEIGHTS={子:1.0,丑:0.95,寅:0.98,卯:0.97,辰:1.02,巳:0.96,午:0.94,未:0.99,申:1.03,酉:1.0,戌:0.92,亥:0.98};
-function seededRandom(seed){let t=seed+0x9e3779b97f4a7c15n;return()=>{t^=t>>12n;t^=t<<25n;t^=t>>27n;const n=(t*0x2545F4914F6CDD1Dn)&((1n<<64n)-1n);return Number(n>>11n)/Number(1n<<53n);}}
-
-/* ===== 月齢（JST） ===== */
-function toJSTDate(date){const tz="Asia/Tokyo";const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);const y=p.find(v=>v.type==='year').value,m=p.find(v=>v.type==='month').value,d=p.find(v=>v.type==='day').value;return new Date(`${y}-${m}-${d}T00:00:00+09:00`);}
-function moonPhase(dateJST){const syn=29.530588853;const base=new Date(Date.UTC(2000,0,6,18,14));const diff=(dateJST-base)/86400000;const phase=((diff%syn)+syn)%syn;const illumination=Math.round((1-Math.cos(2*Math.PI*phase/syn))*50);return {phase,illumination};}
-function moonEmoji(ph){if(ph<1.5)return"🌑";if(ph<6)return"🌒";if(ph<8)return"🌓";if(ph<14)return"🌔";if(ph<16)return"🌕";if(ph<21)return"🌖";if(ph<23)return"🌗";return"🌘";}
-function moonLabel(ph){if(ph<1.5)return"新月に近い月";if(ph<6)return"三日月（満ち）";if(ph<8)return"上弦の月";if(ph<14)return"満ちゆく月";if(ph<16)return"満月";if(ph<21)return"欠けゆく月";if(ph<23)return"下弦の月";return"新月前の月";}
-function drawMoon(canvas,phase){
-  const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=Math.min(w,h)*0.38;
-  ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);
-  for(let i=0;i<60;i++){const x=Math.random()*w,y=Math.random()*h,a=0.5+Math.random()*0.5;ctx.fillStyle=`rgba(255,255,255,${a*0.5})`;ctx.fillRect(x,y,1,1);}
-  ctx.fillStyle="#0a0a12";ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
-  const syn=29.530588853,k=(phase<=syn/2)?(phase/(syn/2)):(1-(phase-syn/2)/(syn/2)),dir=(phase<=syn/2)?1:-1,dx=dir*(r*(1-(2*k-1)));
-  ctx.save();ctx.globalCompositeOperation="lighter";const grd=ctx.createRadialGradient(cx+dx,cy,r*0.1,cx,cy,r*1.05);grd.addColorStop(0,"#f8f6ea");grd.addColorStop(1,"#999382");ctx.fillStyle=grd;ctx.beginPath();ctx.arc(cx+dx,cy,r,0,Math.PI*2);ctx.fill();ctx.restore();
-  ctx.save();ctx.globalAlpha=0.08;ctx.strokeStyle="#fff";ctx.lineWidth=6;ctx.beginPath();ctx.arc(cx,cy,r+3,0,Math.PI*2);ctx.stroke();ctx.restore();
-}
-
-/* ===== 生成本体 ===== */
+// 生成処理
 function generate(){
   const raw=document.getElementById("dateInput").value;
-  const jsDate = raw? new Date(raw+"T00:00:00") : new Date();
-  const jst=toJSTDate(jsDate);
+  const date=raw?new Date(raw+"T00:00:00"):new Date();
+  const wdays=["日","月","火","水","木","金","土"];
+  const w=wdays[date.getDay()];
+  const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+  const eto=sexagenary(y,m,d);
+  const moon=moonPhase(date);
+  const seasonSel=document.getElementById("seasonSelect").value;
+  const season=seasonSel==="auto"?(m>=3&&m<=5?"spring":m>=6&&m<=8?"summer":m>=9&&m<=11?"autumn":"winter"):seasonSel;
+  const accent={spring:"#b48ef7",summer:"#33a1ff",autumn:"#cc7a42",winter:"#6a8fbf"}[season];
 
-  const wArr=["日","月","火","水","木","金","土"], w=wArr[jst.getDay()];
-  const todayJP=`${jst.getFullYear()}年${jst.getMonth()+1}月${jst.getDate()}日（${w}）`;
-  const eto=sexagenaryOfDay(jst);
-  const pick=document.getElementById("seasonSelect").value;
-  const season=(pick==="auto")? seasonFromMonth(jst.getMonth()+1) : pick;
-  const theme=themeFor(season);
-
-  const m=moonPhase(jst), emoji=moonEmoji(m.phase);
-
-  const OGP_TITLE="心灯｜宙のリズム占い";
-  const OGP_DESC="理で導き、やさしさで包む——毎日の“宙の天気”とメッセージを配信。";
-  const OGP_URL="https://kokorobi.vercel.app/";
-  const OGP_IMG="https://kokorobi.vercel.app/og.png";
-
-  const html = `
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${OGP_TITLE}</title>
-<meta name="description" content="${OGP_DESC}">
-<link rel="canonical" href="${OGP_URL}">
-<meta name="theme-color" content="${theme.accent}">
-<!-- OGP -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="${OGP_TITLE}">
-<meta property="og:description" content="${OGP_DESC}">
-<meta property="og:url" content="${OGP_URL}">
-<meta property="og:image" content="${OGP_IMG}">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${OGP_TITLE}">
-<meta name="twitter:description" content="${OGP_DESC}">
-<meta name="twitter:image" content="${OGP_IMG}">
+  const html=`<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>心灯｜宙のリズム占い</title>
+<meta name="description" content="理で導き、やさしさで包む——毎日の“宙の天気”とメッセージを配信。">
+<meta property="og:image" content="https://kokorobi.vercel.app/og.png">
 <style>
-  :root{ --accent:${theme.accent}; }
-  body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#0a0a12;color:#eaeaf2;margin:0;}
-  header{text-align:center;padding:2em 1em;background:linear-gradient(135deg,${theme.gradA},${theme.gradB});color:#222;}
-  header h1{margin:0;font-size:2em;}
-  header p{margin:.4em 0 0;font-size:.95em;color:#333;}
-  .sub{margin-top:.25em;color:#444;font-size:.9em}
-  .moon-wrap{display:flex;flex-direction:column;align-items:center;gap:.5em;margin-top:.75em}
-  .moon-info{font-size:.9em;color:#333}
-  .moon-canvas{background:#000;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  section{max-width:720px;margin:2em auto;padding:1.5em;background:#12121a;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
-  section h2{border-left:6px solid var(--accent);padding-left:.5em;font-size:1.15em;color:#eaeaf2;}
-  .ranking-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .rank-item{border:1px solid #2a2a36;border-radius:10px;padding:.6em;background:#0f0f16;}
-  .rank-item .no{font-weight:bold;color:#c7b6ff;}
-  .meta{font-size:.8em;color:#b8b8c6;}
-  table{width:100%;border-collapse:collapse;color:#ddd;}
-  th,td{border:1px solid #2a2a36;padding:.5em;text-align:left;}
-  th{background:#1b1b26;width:30%;}
-  footer{text-align:center;font-size:.8em;color:#aaa;margin:3em 0 2em;}
-  .loading{text-align:center;color:#888;font-size:.9em;}
-</style>
-</head>
+body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#0a0a12;color:#eee;margin:0}
+header{text-align:center;padding:2em;background:linear-gradient(135deg,${accent},#fff);}
+section{max-width:720px;margin:2em auto;padding:1.5em;background:#12121a;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+h2{border-left:6px solid ${accent};padding-left:.5em;font-size:1.1em;}
+.loading{text-align:center;color:#999;}
+footer{text-align:center;font-size:.8em;color:#aaa;margin:2em 0;}
+</style></head>
 <body>
-
 <header>
-  <h1>心灯｜宙のリズム占い</h1>
-  <p>理で導き、やさしさで包む — 心の調律</p>
-  <p class="sub">🌙 本日：${todayJP} ／ 🐉 干支日：${eto.stem}${eto.branch}（${eto.yomistem}の${eto.yomibr}）</p>
-  <div class="moon-wrap">
-    <canvas id="moon-canvas" class="moon-canvas" width="260" height="260"></canvas>
-    <p id="moon-info" class="moon-info">${emoji} 今夜の月：${moonLabel(m.phase)}（照度${m.illumination}%）</p>
-  </div>
+<h1>心灯｜宙のリズム占い</h1>
+<p>${y}年${m}月${d}日（${w}）　干支日：${eto}</p>
+<p>今夜の月：${moon}</p>
 </header>
-
 <main>
-  <section id="daily"><h2>🌕 今日の灯</h2><div id="daily-content" class="loading">読み込み中...</div></section>
-  <section id="weather"><h2>🌤 宙の天気（干支×五行）</h2><div id="weather-content" class="loading">読み込み中...</div></section>
-  <section id="topics"><h2>🔮 三大運トピック</h2><ul id="topics-content" class="loading"></ul></section>
-  <section id="lucky"><h2>🍀 クイック開運パネル</h2><table id="lucky-content" class="loading"></table></section>
-  <section id="ranking"><h2>🐉 干支ランキング（重み付き・日替わり）</h2><div id="ranking-content" class="ranking-grid loading"></div></section>
-  <section id="blog"><h2>💫 心の調律ノート</h2><div id="blog-content" class="loading"></div></section>
+<section><h2>🌕 今日の灯</h2><div id="daily" class="loading">読み込み中...</div></section>
+<section><h2>🌤 宙の天気</h2><div id="weather" class="loading">読み込み中...</div></section>
+<section><h2>🔮 三大運トピック</h2><div id="topics" class="loading">読み込み中...</div></section>
+<section><h2>🍀 クイック開運</h2><div id="lucky" class="loading">読み込み中...</div></section>
+<section><h2>🐉 干支ランキング</h2><div id="ranking" class="loading">読み込み中...</div></section>
+<section><h2>💫 心の調律ノート</h2><div id="blogs" class="loading">読み込み中...</div></section>
 </main>
-
-<footer><p>© 心灯 – 宙のリズム占い</p></footer>
-
+<footer>© 心灯 – 宙のリズム占い</footer>
 <script>
-const GIST=${JSON.stringify(GIST,null,2)};
-
-// Gistロード
-async function loadContent(id,url){try{const r=await fetch(url);if(!r.ok)throw 0;document.getElementById(id).innerHTML=await r.text();}catch{document.getElementById(id).innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>';}}
-loadContent("daily-content",GIST.daily);
-loadContent("weather-content",GIST.weather);
-loadContent("topics-content",GIST.topics);
-loadContent("lucky-content",GIST.lucky);
-
-// 月描画
-(function(){const c=document.getElementById('moon-canvas'); if(c){drawMoon(c, ${/* その日のphaseで描画 */''} ${'m.phase'} );}})();
-
-// ランキング：重み付き・日替わり
-(async()=>{
-  try{
-    const res=await fetch(GIST.ranking); const raw=await res.text();
-    const tmp=document.createElement('div'); tmp.innerHTML=raw;
-    let items=[...tmp.querySelectorAll('.rank-item')];
-
-    function getZodiac(el){const t=el.textContent||"";for(const z of ${JSON.stringify(ZODIAC_ORDER)}){if(t.includes(z))return z;}return null;}
-
-    const y=${'new Date().getFullYear()'}, mo=${'new Date().getMonth()+1'}, d=${'new Date().getDate()'};
-    const seedBigInt=BigInt(jdn(y,mo,d)); let rnd=seededRandom(seedBigInt);
-
-    const base=${JSON.stringify(BASE_WEIGHTS)};
-    const scored=items.map(el=>{const z=getZodiac(el)||"子";return {el,score:(base[z]||1.0)*(0.5+rnd())};}).sort((a,b)=>b.score-a.score);
-
-    const grid=document.createElement('div'); grid.className='ranking-grid';
-    scored.forEach((s,i)=>{const no=i+1;const n=s.el.querySelector('.no');if(n){n.textContent='#'+no+' '+n.textContent.replace(/^#\\d+\\s*/,'').trim();}grid.appendChild(s.el);});
-    const host=document.getElementById('ranking-content'); host.classList.remove('loading'); host.innerHTML=''; host.appendChild(grid);
-  }catch{document.getElementById('ranking-content').innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; }
-})();
-
-// ブログ3件
-(async()=>{let html="";for(const url of GIST.blogs){try{const r=await fetch(url),t=await r.text();const [title,...rest]=t.split("\\n");html+=\`<article style="margin-bottom:1.5em;"><h3 style="margin:0 0 .2em;color:#c7b6ff;">\${title||"無題"}</h3><p style="margin:0;font-size:.9em;color:#ccc;">\${rest.join("<br>")}</p></article>\`; }catch{ html+='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; } } document.getElementById("blog-content").innerHTML=html||'<p class="loading">（記事準備中）</p>';})();
+async function load(id,url){try{const r=await fetch(url);if(!r.ok)throw 0;document.getElementById(id).innerHTML=await r.text();}catch{document.getElementById(id).innerText='⚠️ 読み込み失敗';}}
+load("daily","${GIST.daily}");
+load("weather","${GIST.weather}");
+load("topics","${GIST.topics}");
+load("lucky","${GIST.lucky}");
+load("ranking","${GIST.ranking}");
+(async()=>{let html='';for(const u of ${JSON.stringify(GIST.blogs)}){try{const r=await fetch(u);const t=await r.text();const [h,...b]=t.split("\\n");html+=\`<article><h3>\${h}</h3><p>\${b.join("<br>")}</p></article>\`; }catch{}}document.getElementById('blogs').innerHTML=html||'記事準備中';})();
 </script>
+</body></html>`;
 
-</body>
-</html>
-  `.trim();
-
-  const ta=document.getElementById("output");
-  ta.value=html; ta.focus(); ta.select();
-  try{ document.execCommand("copy"); alert("✅ 生成した index.html をコピーしました！GitHubの index.html に貼り替えて Commit してください。"); }
-  catch{ alert("生成は成功。手動でコピーしてください。"); }
+  const out=document.getElementById("output");
+  out.value=html;
+  out.select();
+  document.execCommand("copy");
+  alert("✅ index.html をコピーしました！ GitHubで貼り付けてCommitすれば完了です。");
 }
 
-// 既定：今日
-(function(){const input=document.getElementById("dateInput");const t=new Date();const pad=n=>String(n).padStart(2,"0");input.value=`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;})();
+// デフォルト日付セット
+(function(){const d=new Date(),pad=n=>String(n).padStart(2,"0");document.getElementById("dateInput").value=\`\${d.getFullYear()}-\${pad(d.getMonth()+1)}-\${pad(d.getDate())}\`;})();
 </script>
-
-<!-- （任意）生成ロジックをGistから供給する場合は、次の1行を </body> 直前に置く -->
-<!-- <script src="https://gist.github.com/toybox917-cell/f680e539e8421b1910d4550535038f75.js"></script> -->
-
 </body>
 </html>
