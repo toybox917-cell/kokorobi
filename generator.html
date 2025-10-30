@@ -170,7 +170,8 @@ loadTo("ranking",GIST.ranking);
   return indexHTML;
 }
 
-// ===== クリップボード（iPad対策つき） =====
+<script>
+// クリップボード（iPhone/iPad対策つき）
 async function copyText(text){
   try{
     if(navigator.clipboard && window.isSecureContext){
@@ -178,32 +179,68 @@ async function copyText(text){
       return true;
     }
   }catch(e){}
-  try{ // 古典フォールバック
+  // フォールバック
+  try{
     const ta=document.createElement("textarea");
-    ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
-    document.body.appendChild(ta); ta.focus(); ta.select();
+    ta.value=text;
+    ta.style.position="fixed";
+    ta.style.opacity="0";
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
     const ok=document.execCommand("copy");
     document.body.removeChild(ta);
     return ok;
-  }catch(e){ return false; }
+  }catch(e){
+    return false;
+  }
 }
 
-// ===== UIイベント =====
-const out=document.getElementById("out");
-document.getElementById("genBtn").addEventListener("click", ()=>{
-  const dateStr=document.getElementById("dateInput").value;
-  const season=document.getElementById("season").value;
-  out.value = buildIndexHTML(dateStr, season); // まず画面に必ず出す
-  alert("✅ 生成しました。『📥 ダウンロード』か『📋 コピー』で index.html に反映してください。");
+// buildHTML が無い場合は buildIndexHTML を拾って使う
+function ensureBuild(){
+  if(typeof window.buildHTML!=="function" && typeof window.buildIndexHTML==="function"){
+    window.buildHTML = window.buildIndexHTML;
+  }
+}
+
+// 要素参照（無ければ安全にスキップ）
+const genBtn  = document.getElementById("genBtn");
+const copyBtn = document.getElementById("copyBtn");
+const dlBtn   = document.getElementById("dlBtn");
+const out     = document.getElementById("out");
+
+genBtn && genBtn.addEventListener("click", async ()=>{
+  try{
+    ensureBuild();
+    if(typeof window.buildHTML!=="function"){
+      alert("❌ buildHTML が見つかりません。上のスクリプトに buildHTML（または buildIndexHTML）を定義してください。");
+      return;
+    }
+    const dateStr = (document.getElementById("dateInput")||{}).value || "";
+    const season  = (document.getElementById("season")||{}).value || "auto";
+    const html = window.buildHTML(dateStr, season);
+
+    if(out) out.value = html; // まず画面に確実に出す（iPadでも表示される）
+
+    const ok = await copyText(html);
+    alert(ok
+      ? "✅ 生成＆コピー完了！\n→ GitHub の index.html に全貼り替えして Commit してください。"
+      : "✅ 生成OK！\n❕ コピーに失敗したので、下の枠を長押しで全選択→コピーしてください。");
+  }catch(err){
+    console.error(err);
+    alert("❌ 生成に失敗しました。Console のエラー表示を教えてください。");
+  }
 });
-document.getElementById("copyBtn").addEventListener("click", async ()=>{
-  if(!out.value){alert("先に『✨ 生成』を押してください。"); return;}
+
+// 任意：明示コピー
+copyBtn && copyBtn.addEventListener("click", async ()=>{
+  if(!out || !out.value){ alert("先に『✨ 生成』を押してください。"); return; }
   const ok = await copyText(out.value);
-  alert(ok ? "✅ コピーしました。GitHubの index.html に貼り付けて Commit してください。"
-           : "❕ コピーに失敗。テキストを長押しで全選択→コピーしてください。");
+  alert(ok ? "✅ コピーしました！" : "❕ コピーに失敗。長押しで手動コピーしてください。");
 });
-document.getElementById("dlBtn").addEventListener("click", ()=>{
-  if(!out.value){alert("先に『✨ 生成』を押してください。"); return;}
+
+// 任意：index.html をダウンロード保存（iPad向け）
+dlBtn && dlBtn.addEventListener("click", ()=>{
+  if(!out || !out.value){ alert("先に『✨ 生成』を押してください。"); return; }
   const blob = new Blob([out.value], {type:"text/html;charset=utf-8"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
