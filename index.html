@@ -3,114 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>心灯｜宙のリズム占い</title>
+  <title>心灯｜Gistテンプレート自動生成</title>
   <style>
-    body { font-family: "Hiragino Sans","Yu Gothic",sans-serif; background:#fafafa; color:#333; margin:0; }
-    header { text-align:center; padding:2em 1em; background:linear-gradient(135deg,#aee1f9,#f6d6ff); }
-    header h1 { margin:0; font-size:2em; color:#222; }
-    header p { margin:.5em 0 0; font-size:.9em; color:#555; }
-    section { max-width:720px; margin:2em auto; padding:1.5em; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
-    section h2 { border-left:6px solid #b48ef7; padding-left:.5em; font-size:1.3em; color:#444; }
-    .ranking-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .rank-item { border:1px solid #eee; border-radius:10px; padding:.6em; background:#fdfcff; }
-    .rank-item .no { font-weight:bold; color:#6a4fbf; }
-    .meta { font-size:.8em; color:#555; }
-    table { width:100%; border-collapse:collapse; }
-    th,td { border:1px solid #eee; padding:.5em; text-align:left; }
-    th { background:#f3f0fa; width:30%; }
-    footer { text-align:center; font-size:.8em; color:#666; margin:3em 0 2em; }
-    .loading { text-align:center; color:#aaa; font-size:.9em; }
+    body { font-family: "Hiragino Sans","Yu Gothic",sans-serif; background:#fafafa; color:#333; margin:0; padding:2em; }
+    h1 { text-align:center; margin-bottom:1em; }
+    section { background:#fff; padding:1.5em; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.05); margin-bottom:2em; }
+    label { font-weight:bold; }
+    textarea { width:100%; height:100px; margin-top:.5em; padding:.5em; font-size:.9em; border-radius:6px; border:1px solid #ccc; }
+    button { display:block; margin:1em auto; padding:.6em 1.2em; background:#b48ef7; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:1em; }
+    button:hover { background:#9a77f2; }
+    pre { background:#f7f7f7; padding:1em; border-radius:8px; overflow:auto; font-size:.9em; white-space:pre-wrap; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>心灯｜宙のリズム占い</h1>
-  <p>理で導き、やさしさで包む — 心の調律</p>
-  <p id="today-date" style="margin-top:.3em;font-size:.9em;color:#555;"></p>
-</header>
+<h1>🌙 心灯｜Gistテンプレート自動生成</h1>
+<section>
+  <label>日付を入力：</label>
+  <input type="date" id="dateInput" value="">
+  <button onclick="generateTemplate()">✨ テンプレートを生成</button>
+</section>
 
-<main>
-  <section id="daily">
-    <h2>🌕 今日の灯</h2>
-    <div id="daily-content" class="loading">読み込み中...</div>
-  </section>
-
-  <section id="weather">
-    <h2>🌤 宙の天気（干支×五行）</h2>
-    <div id="weather-content" class="loading">読み込み中...</div>
-  </section>
-
-  <section id="topics">
-    <h2>🔮 三大運トピック</h2>
-    <ul id="topics-content" class="loading"></ul>
-  </section>
-
-  <section id="lucky">
-    <h2>🍀 クイック開運パネル</h2>
-    <table id="lucky-content" class="loading"></table>
-  </section>
-
-  <section id="ranking">
-    <h2>🐉 干支ランキング</h2>
-    <div id="ranking-content" class="ranking-grid loading"></div>
-  </section>
-
-  <section id="blog">
-    <h2>💫 心の調律ノート</h2>
-    <div id="blog-content" class="loading"></div>
-  </section>
-</main>
-
-<footer>
-  <p>© 心灯 – 宙のリズム占い</p>
-</footer>
+<section>
+  <h2>🕊️ 出力結果</h2>
+  <pre id="output">ここにテンプレートが表示されます</pre>
+</section>
 
 <script>
-const GIST = {
-  daily:  "https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
-  weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
-  topics: "https://gist.githubusercontent.com/toybox917-cell/3499c5dfebf2462208ad234120be087a/raw",
-  lucky:  "https://gist.githubusercontent.com/toybox917-cell/ffbaf45b1edb1c11d2a3e814e76066fa/raw",
-  ranking:"https://gist.githubusercontent.com/toybox917-cell/c344ff836842c63913079d0a3637f1fb/raw",
-  blogs:[
-    "https://gist.githubusercontent.com/toybox917-cell/77f34ebf969517f68d842b7be379b7fa/raw",
-    "https://gist.githubusercontent.com/toybox917-cell/5fedbdbfd6464f26351946495e472eb6/raw",
-    "https://gist.githubusercontent.com/toybox917-cell/435d9bc589b417dcdc4c4e83d0a4b2c2/raw"
-  ]
-};
+function generateTemplate(){
+  const date = document.getElementById("dateInput").value || new Date().toISOString().split('T')[0];
+  const d = new Date(date);
+  const weekdays = ["日","月","火","水","木","金","土"];
+  const jpDate = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${weekdays[d.getDay()]}）`;
 
-// 🌞 今日の日付
-const d=new Date(), w=["日","月","火","水","木","金","土"][d.getDay()];
-document.getElementById("today-date").textContent = `🌙 本日：${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${w}）`;
+  const text = `
+【心灯｜${jpDate}版 テンプレート】
 
-// 共通読込
-async function loadContent(id,url){
-  try{ const res=await fetch(url); if(!res.ok) throw 0; const t=await res.text(); document.getElementById(id).innerHTML=t; }
-  catch{ document.getElementById(id).innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; }
+🔮 daily-message.txt
+今日の灯：
+（今日のテーマを2〜3行で）
+
+🌤 today-weather.txt
+総テーマ：
+キーワード：
+五行：
+開運アクション：
+
+🔮 topics.html
+<li><strong>恋愛：</strong></li>
+<li><strong>仕事：</strong></li>
+<li><strong>金運：</strong></li>
+
+🍀 lucky.html
+<tr><th>カラー</th><td></td></tr>
+<tr><th>香り</th><td></td></tr>
+<tr><th>食</th><td></td></tr>
+<tr><th>音</th><td></td></tr>
+<tr><th>言霊</th><td></td></tr>
+
+🐉 ranking.html
+<article class="rank-item"><div class="no">#1 子（ね）</div><p></p><p class="meta"></p></article>
+... #2〜#12 同様に
+
+💫 blog1.txt
+タイトル：
+（本文）
+
+💫 blog2.txt
+タイトル：
+（本文）
+
+💫 blog3.txt
+タイトル：
+（本文）
+`;
+  document.getElementById("output").textContent = text.trim();
 }
-loadContent("daily-content",GIST.daily);
-loadContent("weather-content",GIST.weather);
-loadContent("topics-content",GIST.topics);
-loadContent("lucky-content",GIST.lucky);
-loadContent("ranking-content",GIST.ranking);
-
-// ブログ3件
-(async()=>{
-  let html="";
-  for(const url of GIST.blogs){
-    try{
-      const r=await fetch(url), txt=await r.text();
-      const [title,...rest]=txt.split("\n");
-      const body=rest.join("<br>");
-      html += `<article style="margin-bottom:1.5em;">
-        <h3 style="margin:0 0 .2em;color:#6a4fbf;">${title||"無題"}</h3>
-        <p style="margin:0;font-size:.9em;color:#555;">${body||""}</p>
-      </article>`;
-    }catch{ html += `<p style="color:#999;">⚠️ 読み込みできませんでした</p>`; }
-  }
-  document.getElementById("blog-content").innerHTML = html || '<p class="loading">（記事準備中）</p>';
-})();
 </script>
 
 </body>
