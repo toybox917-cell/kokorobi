@@ -36,13 +36,13 @@
   <div><button onclick="generate()">✨ index.html を生成してコピー</button></div>
 </div>
 
-<p class="hint">干支日＋季節テーマ＋Gistリンク＋<b>重み付き“日替わり”ランキング</b>＋<b>OGP</b>＋<b>月情報（絵文字＋画像描画）</b>入りの index.html を自動生成します。日本（JST）基準の月齢で描画。</p>
+<p class="hint">干支日＋季節テーマ＋Gistリンク＋<b>重み付き“日替わり”ランキング</b>＋<b>OGP</b>＋<b>月情報（絵文字＋画像描画）</b>入りの index.html を自動生成します（JST基準）。</p>
 
 <textarea id="output" readonly placeholder="ここに生成された index.html が表示されます"></textarea>
-<small>※ 月齢は 2000-01-06 18:14 UTC 新月を基準に計算し、北半球（日本）での見え方に合わせて描画します。</small>
+<small>※ 月齢は 2000-01-06 18:14 UTC 新月を基準に計算（北半球＝日本の見え方で描画）。</small>
 
 <script>
-// ---------- 干支（完全暦式 JDN） ----------
+/* ===== 干支（完全暦式 JDN） ===== */
 const STEMS=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 const STEM_YOMI=["きのえ","きのと","ひのえ","ひのと","つちのえ","つちのと","かのえ","かのと","みずのえ","みずのと"];
 const BRANCHES=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
@@ -50,11 +50,18 @@ const BRANCH_YOMI=["ね","うし","とら","う","たつ","み","うま","ひつ
 function jdn(y,m,d){const a=Math.floor((14-m)/2);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
 function sexagenaryOfDay(date){const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();const N=jdn(y,m,d);const si=(N+9)%10, bi=(N+1)%12;return {stem:STEMS[(si+10)%10],branch:BRANCHES[(bi+12)%12],yomistem:STEM_YOMI[(si+10)%10],yomibr:BRANCH_YOMI[(bi+12)%12]};}
 
-// ---------- 季節テーマ ----------
+/* ===== 季節テーマ ===== */
 function seasonFromMonth(m){if(m>=3&&m<=5)return"spring"; if(m>=6&&m<=8)return"summer"; if(m>=9&&m<=11)return"autumn"; return"winter";}
-function themeFor(season){return({spring:{gradA:"#fce3ec",gradB:"#e7f7ff",accent:"#b48ef7"},summer:{gradA:"#bfe9ff",gradB:"#ffecd2",accent:"#33a1ff"},autumn:{gradA:"#ffe1c6",gradB:"#f5f0ff",accent:"#cc7a42"},winter:{gradA:"#e8f1ff",gradB:"#f2f6fb",accent:"#6a8fbf"}})[season];}
+function themeFor(season){
+  return({
+    spring:{gradA:"#fce3ec",gradB:"#e7f7ff",accent:"#b48ef7"},
+    summer:{gradA:"#bfe9ff",gradB:"#ffecd2",accent:"#33a1ff"},
+    autumn:{gradA:"#ffe1c6",gradB:"#f5f0ff",accent:"#cc7a42"},
+    winter:{gradA:"#e8f1ff",gradB:"#f2f6fb",accent:"#6a8fbf"}
+  })[season];
+}
 
-// ---------- Gist（固定） ----------
+/* ===== Gist（固定Raw URL） ===== */
 const GIST={
   daily:"https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
@@ -68,73 +75,47 @@ const GIST={
   ]
 };
 
-// ---------- ランキングの重み＆シード ----------
+/* ===== ランキング重み＆シード ===== */
 const ZODIAC_ORDER=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 const BASE_WEIGHTS={子:1.0,丑:0.95,寅:0.98,卯:0.97,辰:1.02,巳:0.96,午:0.94,未:0.99,申:1.03,酉:1.0,戌:0.92,亥:0.98};
 function seededRandom(seed){let t=seed+0x9e3779b97f4a7c15n;return()=>{t^=t>>12n;t^=t<<25n;t^=t>>27n;const n=(t*0x2545F4914F6CDD1Dn)&((1n<<64n)-1n);return Number(n>>11n)/Number(1n<<53n);}}
 
-// ---------- 月齢（JST）・月絵文字 ----------
-function toJSTDate(date){
-  // date: local → JST 0:00 固定
-  const tz="Asia/Tokyo";
-  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);
-  const y=parts.find(p=>p.type==='year').value;
-  const m=parts.find(p=>p.type==='month').value;
-  const d=parts.find(p=>p.type==='day').value;
-  return new Date(`${y}-${m}-${d}T00:00:00+09:00`);
-}
-function moonPhase(dateJST){
-  // 2000-01-06 18:14:00 UTC 新月基準
-  const synodic=29.530588853;
-  const knownNew=new Date(Date.UTC(2000,0,6,18,14,0));
-  const diffDays=(dateJST.getTime()-knownNew.getTime())/86400000; // UTC差でOK
-  const phase=((diffDays % synodic)+synodic)%synodic;           // 0..29.53
-  const illumination=Math.round((1-Math.cos(2*Math.PI*phase/synodic))*50); // 0..100
-  return {phase,illumination};
-}
-function moonEmoji(phase){
-  if(phase<1.5) return "🌑";
-  if(phase<6)   return "🌒";
-  if(phase<8)   return "🌓";
-  if(phase<14)  return "🌔";
-  if(phase<16)  return "🌕";
-  if(phase<21)  return "🌖";
-  if(phase<23)  return "🌗";
-  return "🌘";
+/* ===== 月齢（JST） ===== */
+function toJSTDate(date){const tz="Asia/Tokyo";const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);const y=p.find(v=>v.type==='year').value,m=p.find(v=>v.type==='month').value,d=p.find(v=>v.type==='day').value;return new Date(`${y}-${m}-${d}T00:00:00+09:00`);}
+function moonPhase(dateJST){const syn=29.530588853;const base=new Date(Date.UTC(2000,0,6,18,14));const diff=(dateJST-base)/86400000;const phase=((diff%syn)+syn)%syn;const illumination=Math.round((1-Math.cos(2*Math.PI*phase/syn))*50);return {phase,illumination};}
+function moonEmoji(ph){if(ph<1.5)return"🌑";if(ph<6)return"🌒";if(ph<8)return"🌓";if(ph<14)return"🌔";if(ph<16)return"🌕";if(ph<21)return"🌖";if(ph<23)return"🌗";return"🌘";}
+function moonLabel(ph){if(ph<1.5)return"新月に近い月";if(ph<6)return"三日月（満ち）";if(ph<8)return"上弦の月";if(ph<14)return"満ちゆく月";if(ph<16)return"満月";if(ph<21)return"欠けゆく月";if(ph<23)return"下弦の月";return"新月前の月";}
+function drawMoon(canvas,phase){
+  const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=Math.min(w,h)*0.38;
+  ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);
+  for(let i=0;i<60;i++){const x=Math.random()*w,y=Math.random()*h,a=0.5+Math.random()*0.5;ctx.fillStyle=`rgba(255,255,255,${a*0.5})`;ctx.fillRect(x,y,1,1);}
+  ctx.fillStyle="#0a0a12";ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+  const syn=29.530588853,k=(phase<=syn/2)?(phase/(syn/2)):(1-(phase-syn/2)/(syn/2)),dir=(phase<=syn/2)?1:-1,dx=dir*(r*(1-(2*k-1)));
+  ctx.save();ctx.globalCompositeOperation="lighter";const grd=ctx.createRadialGradient(cx+dx,cy,r*0.1,cx,cy,r*1.05);grd.addColorStop(0,"#f8f6ea");grd.addColorStop(1,"#999382");ctx.fillStyle=grd;ctx.beginPath();ctx.arc(cx+dx,cy,r,0,Math.PI*2);ctx.fill();ctx.restore();
+  ctx.save();ctx.globalAlpha=0.08;ctx.strokeStyle="#fff";ctx.lineWidth=6;ctx.beginPath();ctx.arc(cx,cy,r+3,0,Math.PI*2);ctx.stroke();ctx.restore();
 }
 
-// ---------- 生成 ----------
+/* ===== 生成本体 ===== */
 function generate(){
-  // 入力日 or 今日（JST準拠）
   const raw=document.getElementById("dateInput").value;
   const jsDate = raw? new Date(raw+"T00:00:00") : new Date();
   const jst=toJSTDate(jsDate);
 
-  // 曜日
-  const wArr=["日","月","火","水","木","金","土"];
-  const w=wArr[jst.getDay()];
+  const wArr=["日","月","火","水","木","金","土"], w=wArr[jst.getDay()];
   const todayJP=`${jst.getFullYear()}年${jst.getMonth()+1}月${jst.getDate()}日（${w}）`;
-
-  // 干支
   const eto=sexagenaryOfDay(jst);
-
-  // 季節
   const pick=document.getElementById("seasonSelect").value;
   const season=(pick==="auto")? seasonFromMonth(jst.getMonth()+1) : pick;
   const theme=themeFor(season);
 
-  // 月齢（JST）
-  const m=moonPhase(jst);
-  const emoji=moonEmoji(m.phase);
+  const m=moonPhase(jst), emoji=moonEmoji(m.phase);
 
-  // OGP
   const OGP_TITLE="心灯｜宙のリズム占い";
   const OGP_DESC="理で導き、やさしさで包む——毎日の“宙の天気”とメッセージを配信。";
   const OGP_URL="https://kokorobi.vercel.app/";
-  const OGP_IMG="https://kokorobi.vercel.app/og.png"; // 任意で差し替え可
+  const OGP_IMG="https://kokorobi.vercel.app/og.png";
 
-  // index.html
-  const html=`
+  const html = `
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -185,196 +166,62 @@ function generate(){
   <p class="sub">🌙 本日：${todayJP} ／ 🐉 干支日：${eto.stem}${eto.branch}（${eto.yomistem}の${eto.yomibr}）</p>
   <div class="moon-wrap">
     <canvas id="moon-canvas" class="moon-canvas" width="260" height="260"></canvas>
-    <p id="moon-info" class="moon-info">計算中...</p>
+    <p id="moon-info" class="moon-info">${emoji} 今夜の月：${moonLabel(m.phase)}（照度${m.illumination}%）</p>
   </div>
 </header>
 
 <main>
-  <section id="daily">
-    <h2>🌕 今日の灯</h2>
-    <div id="daily-content" class="loading">読み込み中...</div>
-  </section>
-
-  <section id="weather">
-    <h2>🌤 宙の天気（干支×五行）</h2>
-    <div id="weather-content" class="loading">読み込み中...</div>
-  </section>
-
-  <section id="topics">
-    <h2>🔮 三大運トピック</h2>
-    <ul id="topics-content" class="loading"></ul>
-  </section>
-
-  <section id="lucky">
-    <h2>🍀 クイック開運パネル</h2>
-    <table id="lucky-content" class="loading"></table>
-  </section>
-
-  <section id="ranking">
-    <h2>🐉 干支ランキング（重み付き・日替わり）</h2>
-    <div id="ranking-content" class="ranking-grid loading"></div>
-  </section>
-
-  <section id="blog">
-    <h2>💫 心の調律ノート</h2>
-    <div id="blog-content" class="loading"></div>
-  </section>
+  <section id="daily"><h2>🌕 今日の灯</h2><div id="daily-content" class="loading">読み込み中...</div></section>
+  <section id="weather"><h2>🌤 宙の天気（干支×五行）</h2><div id="weather-content" class="loading">読み込み中...</div></section>
+  <section id="topics"><h2>🔮 三大運トピック</h2><ul id="topics-content" class="loading"></ul></section>
+  <section id="lucky"><h2>🍀 クイック開運パネル</h2><table id="lucky-content" class="loading"></table></section>
+  <section id="ranking"><h2>🐉 干支ランキング（重み付き・日替わり）</h2><div id="ranking-content" class="ranking-grid loading"></div></section>
+  <section id="blog"><h2>💫 心の調律ノート</h2><div id="blog-content" class="loading"></div></section>
 </main>
 
-<footer>
-  <p>© 心灯 – 宙のリズム占い</p>
-</footer>
+<footer><p>© 心灯 – 宙のリズム占い</p></footer>
 
 <script>
 const GIST=${JSON.stringify(GIST,null,2)};
 
-// JST日付
-function toJSTDate(d){const tz="Asia/Tokyo";const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);const y=p.find(v=>v.type==='year').value,m=p.find(v=>v.type==='month').value,dd=p.find(v=>v.type==='day').value;return new Date(\`\${y}-\${m}-\${dd}T00:00:00+09:00\`);}
+// Gistロード
+async function loadContent(id,url){try{const r=await fetch(url);if(!r.ok)throw 0;document.getElementById(id).innerHTML=await r.text();}catch{document.getElementById(id).innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>';}}
+loadContent("daily-content",GIST.daily);
+loadContent("weather-content",GIST.weather);
+loadContent("topics-content",GIST.topics);
+loadContent("lucky-content",GIST.lucky);
 
-// 月齢＆絵文字
-function moonPhase(dateJST){const syn=29.530588853;const base=new Date(Date.UTC(2000,0,6,18,14));const diff=(dateJST-base)/86400000;const ph=((diff%syn)+syn)%syn;const illum=Math.round((1-Math.cos(2*Math.PI*ph/syn))*50);return {phase:ph,illumination:illum};}
-function moonEmoji(ph){if(ph<1.5)return"🌑";if(ph<6)return"🌒";if(ph<8)return"🌓";if(ph<14)return"🌔";if(ph<16)return"🌕";if(ph<21)return"🌖";if(ph<23)return"🌗";return"🌘";}
-function moonLabel(ph){
-  if(ph<1.5) return "新月に近い月";
-  if(ph<6)   return "三日月（満ち）";
-  if(ph<8)   return "上弦の月";
-  if(ph<14)  return "満ちゆく月";
-  if(ph<16)  return "満月";
-  if(ph<21)  return "欠けゆく月";
-  if(ph<23)  return "下弦の月";
-  return "新月前の月";
-}
+// 月描画
+(function(){const c=document.getElementById('moon-canvas'); if(c){drawMoon(c, ${/* その日のphaseで描画 */''} ${'m.phase'} );}})();
 
-// 月の描画（北半球向け）：右が“満ちる”／左が“欠ける”
-function drawMoon(canvas, phase){
-  const ctx=canvas.getContext('2d');
-  const w=canvas.width, h=canvas.height;
-  const cx=w/2, cy=h/2, r=Math.min(w,h)*0.38;
-
-  // 背景（星の粒）
-  ctx.fillStyle="#000";
-  ctx.fillRect(0,0,w,h);
-  for(let i=0;i<60;i++){
-    const x=Math.random()*w, y=Math.random()*h, a=0.5+Math.random()*0.5;
-    ctx.fillStyle=\`rgba(255,255,255,\${a*0.5})\`;
-    ctx.fillRect(x,y,1,1);
-  }
-
-  // 月の外円（暗い側）
-  ctx.fillStyle="#0a0a12";
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
-
-  // 照らされた側（楕円マスクで月相を表現）
-  // phase: 0→満ち始め→14.77(満月)→欠け→29.53
-  const syn=29.530588853;
-  const k=(phase<=syn/2)? (phase/(syn/2)) : (1-(phase-syn/2)/(syn/2)); // 0→1→0
-  const dir = (phase<=syn/2)? 1 : -1; // 満ち:右→ 欠け:左（北半球）
-  const dx = dir * (r * (1 - (2*k-1))); // ハイライト中心オフセット
-
-  // 明るい円
-  ctx.save();
-  ctx.globalCompositeOperation="lighter";
-  const grd=ctx.createRadialGradient(cx+dx,cy,r*0.1,cx,cy,r*1.05);
-  grd.addColorStop(0,"#f8f6ea");
-  grd.addColorStop(1,"#999382");
-  ctx.fillStyle=grd;
-  ctx.beginPath(); ctx.arc(cx+dx,cy,r,0,Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // ハイライトの縁をソフトに
-  ctx.save();
-  ctx.globalAlpha=0.08;
-  ctx.strokeStyle="#fff";
-  ctx.lineWidth=6;
-  ctx.beginPath(); ctx.arc(cx,cy,r+3,0,Math.PI*2); ctx.stroke();
-  ctx.restore();
-}
-
-// 共通読込
-async function loadContent(id,url){
-  try{ const res=await fetch(url); if(!res.ok) throw 0; const t=await res.text(); document.getElementById(id).innerHTML=t; }
-  catch{ document.getElementById(id).innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; }
-}
-
-// ランキング重み付き・日替わり
+// ランキング：重み付き・日替わり
 (async()=>{
   try{
-    const res=await fetch(GIST.ranking);
-    const raw=await res.text();
+    const res=await fetch(GIST.ranking); const raw=await res.text();
     const tmp=document.createElement('div'); tmp.innerHTML=raw;
     let items=[...tmp.querySelectorAll('.rank-item')];
 
-    function getZodiac(el){
-      const t=el.textContent||"";
-      for(const z of ${JSON.stringify(ZODIAC_ORDER)}){ if(t.includes(z)) return z; }
-      return null;
-    }
+    function getZodiac(el){const t=el.textContent||"";for(const z of ${JSON.stringify(ZODIAC_ORDER)}){if(t.includes(z))return z;}return null;}
 
-    // 日付JST→JDN
-    const jst=toJSTDate(new Date());
-    const seedBigInt=BigInt(${/* inline jdn to avoid scope */''}(function(y,m,d){const a=Math.floor((14-m)/2);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;})(jst.getFullYear(),jst.getMonth()+1,jst.getDate()));
-    let rnd=(function(seed){let t=seed+0x9e3779b97f4a7c15n;return()=>{t^=t>>12n;t^=t<<25n;t^=t>>27n;const n=(t*0x2545F4914F6CDD1Dn)&((1n<<64n)-1n);return Number(n>>11n)/Number(1n<<53n);};})(seedBigInt);
+    const y=${'new Date().getFullYear()'}, mo=${'new Date().getMonth()+1'}, d=${'new Date().getDate()'};
+    const seedBigInt=BigInt(jdn(y,mo,d)); let rnd=seededRandom(seedBigInt);
 
     const base=${JSON.stringify(BASE_WEIGHTS)};
-    const scored=items.map(el=>{
-      const z=getZodiac(el)||"子";
-      const score=(base[z]||1.0)*(0.5+rnd());
-      return {el,score,z};
-    }).sort((a,b)=>b.score-a.score);
+    const scored=items.map(el=>{const z=getZodiac(el)||"子";return {el,score:(base[z]||1.0)*(0.5+rnd())};}).sort((a,b)=>b.score-a.score);
 
     const grid=document.createElement('div'); grid.className='ranking-grid';
-    scored.forEach((s,i)=>{
-      const no=i+1;
-      const n=s.el.querySelector('.no');
-      if(n){ n.textContent = '#' + no + ' ' + n.textContent.replace(/^#\d+\s*/,'').trim(); }
-      grid.appendChild(s.el);
-    });
-    const host=document.getElementById('ranking-content');
-    host.classList.remove('loading'); host.innerHTML=''; host.appendChild(grid);
-  }catch{
-    document.getElementById('ranking-content').innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>';
-  }
+    scored.forEach((s,i)=>{const no=i+1;const n=s.el.querySelector('.no');if(n){n.textContent='#'+no+' '+n.textContent.replace(/^#\\d+\\s*/,'').trim();}grid.appendChild(s.el);});
+    const host=document.getElementById('ranking-content'); host.classList.remove('loading'); host.innerHTML=''; host.appendChild(grid);
+  }catch{document.getElementById('ranking-content').innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; }
 })();
 
-// 初期化＆コンテンツ読込
-(function(){
-  // 月情報描画
-  const jst=toJSTDate(new Date());
-  const m=moonPhase(jst);
-  const emoji=moonEmoji(m.phase);
-  const info=document.getElementById('moon-info');
-  if(info){ info.textContent = \`\${emoji} 今夜の月：\${moonLabel(m.phase)}（照度\${m.illumination}%）\`; }
-  const c=document.getElementById('moon-canvas');
-  if(c){ drawMoon(c,m.phase); }
-
-  // Gistロード
-  loadContent("daily-content",GIST.daily);
-  loadContent("weather-content",GIST.weather);
-  loadContent("topics-content",GIST.topics);
-  loadContent("lucky-content",GIST.lucky);
-
-  // ブログ
-  (async()=>{
-    let html="";
-    for(const url of GIST.blogs){
-      try{
-        const r=await fetch(url), txt=await r.text();
-        const [title,...rest]=txt.split("\\n");
-        html += \`<article style="margin-bottom:1.5em;">
-          <h3 style="margin:0 0 .2em;color:#c7b6ff;">\${title||"無題"}</h3>
-          <p style="margin:0;font-size:.9em;color:#ccc;">\${rest.join("<br>")}</p>
-        </article>\`;
-      }catch{ html+='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; }
-    }
-    const b=document.getElementById("blog-content");
-    if(b) b.innerHTML = html || '<p class="loading">（記事準備中）</p>';
-  })();
-})();
-
+// ブログ3件
+(async()=>{let html="";for(const url of GIST.blogs){try{const r=await fetch(url),t=await r.text();const [title,...rest]=t.split("\\n");html+=\`<article style="margin-bottom:1.5em;"><h3 style="margin:0 0 .2em;color:#c7b6ff;">\${title||"無題"}</h3><p style="margin:0;font-size:.9em;color:#ccc;">\${rest.join("<br>")}</p></article>\`; }catch{ html+='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; } } document.getElementById("blog-content").innerHTML=html||'<p class="loading">（記事準備中）</p>';})();
 </script>
+
 </body>
 </html>
-`.trim();
+  `.trim();
 
   const ta=document.getElementById("output");
   ta.value=html; ta.focus(); ta.select();
@@ -383,11 +230,11 @@ async function loadContent(id,url){
 }
 
 // 既定：今日
-(function(){
-  const input=document.getElementById("dateInput");
-  const t=new Date(); const pad=n=>String(n).padStart(2,"0");
-  input.value=`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;
-})();
+(function(){const input=document.getElementById("dateInput");const t=new Date();const pad=n=>String(n).padStart(2,"0");input.value=`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;})();
 </script>
+
+<!-- （任意）生成ロジックをGistから供給する場合は、次の1行を </body> 直前に置く -->
+<!-- <script src="https://gist.github.com/toybox917-cell/f680e539e8421b1910d4550535038f75.js"></script> -->
+
 </body>
 </html>
