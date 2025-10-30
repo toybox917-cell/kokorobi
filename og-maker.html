@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>心灯｜OGPメーカー</title>
+<style>body{margin:0;background:#0a0a12;color:#eaeaf2;font-family:"Hiragino Sans","Yu Gothic",sans-serif;display:flex;flex-direction:column;align-items:center;gap:14px;padding:18px}.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}input,button{padding:.6em .9em;border-radius:10px;border:1px solid #2a2a36;background:#12121a;color:#eaeaf2}button{background:#b48ef7;border:none;cursor:pointer}button:hover{background:#9a77f2}canvas{background:#0a0a12;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.5)}small{color:#9aa}</style></head>
+<body>
+<h1 style="margin:6px 0 0">心灯｜OGPメーカー</h1>
+<div class="row">
+  <input id="title" value="心灯 – 宙のリズム占い" size="28" />
+  <input id="tag" value="理で導き、やさしさで包む。" size="28" />
+  <button onclick="draw()">🖌️ 再描画</button>
+  <button onclick="save()">💾 og.png を保存</button>
+</div>
+<canvas id="c" width="1200" height="630"></canvas>
+<small>保存後、リポジトリ直下に <b>og.png</b> としてアップロードしてください。</small>
+<script>
+const W=1200,H=630;
+function drawMoon(ctx,cx,cy,r,phase=0.54){
+  for(let i=0;i<220;i++){const x=Math.random()*W,y=Math.random()*H,a=Math.random()*0.6;ctx.fillStyle=`rgba(255,255,255,${a*0.08})`;ctx.fillRect(x,y,1,1);}
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
+  ctx.fillStyle="#0a0a12";ctx.fillRect(cx-r-2,cy-r-2,r*2+4,r*2+4);
+  const g=ctx.createRadialGradient(cx,cy,r*0.2,cx,cy,r*1.05);g.addColorStop(0,"#f5efd9");g.addColorStop(1,"#8a8374");
+  const k=(phase<=.5)?(phase/.5):(1-(phase-.5)/.5),dir=(phase<=.5)?1:-1,dx=dir*(r*(1-(2*k-1)));
+  ctx.globalCompositeOperation="lighter";ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx+dx,cy,r,0,Math.PI*2);ctx.fill();ctx.restore();
+  ctx.globalAlpha=.12;ctx.strokeStyle="#fff";ctx.lineWidth=6;ctx.beginPath();ctx.arc(cx,cy,r+4,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
+}
+function draw(){
+  const title=document.getElementById('title').value||"心灯 – 宙のリズム占い";
+  const tag=document.getElementById('tag').value||"理で導き、やさしさで包む。";
+  const c=document.getElementById('c'),ctx=c.getContext('2d');
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,"#0a0a12");bg.addColorStop(1,"#1a1521");ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  drawMoon(ctx,W*.5,H*.53,150,.54);
+  ctx.fillStyle="#f2efd9";ctx.font="700 56px 'Hiragino Sans','Yu Gothic',sans-serif";ctx.textAlign="center";ctx.shadowColor="rgba(255,238,200,.4)";ctx.shadowBlur=16;ctx.fillText(title,W*.5,H*.27);
+  ctx.shadowBlur=0;ctx.fillStyle="#e7dfc3";ctx.font="400 32px 'Hiragino Sans','Yu Gothic',sans-serif";ctx.fillText(tag,W*.5,H*.82);
+  ctx.fillStyle="#cbb57c";ctx.font="500 24px 'Hiragino Sans','Yu Gothic',sans-serif";ctx.textAlign="right";ctx.fillText("© KOKOROBI",W-28,H-28);
+}
+function save(){const c=document.getElementById('c');const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download="og.png";a.click();}
+draw();
+</script>
+</body></html>
