@@ -5,33 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>心灯｜宙のリズム占い</title>
   <style>
-    body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; background: #fafafa; color: #333; margin: 0; }
-    header { text-align: center; padding: 2em 1em; background: linear-gradient(135deg, #aee1f9, #f6d6ff); }
-    header h1 { margin: 0; font-size: 2em; color: #222; }
-    header p { margin: 0.5em 0 0; font-size: 0.9em; color: #555; }
-
-    section { max-width: 720px; margin: 2em auto; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    section h2 { border-left: 6px solid #b48ef7; padding-left: 0.5em; font-size: 1.3em; color: #444; }
-
-    .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .rank-item { border: 1px solid #eee; border-radius: 10px; padding: 0.6em; background: #fdfcff; }
-    .rank-item .no { font-weight: bold; color: #6a4fbf; }
-    .meta { font-size: 0.8em; color: #555; }
-
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #eee; padding: 0.5em; text-align: left; }
-    th { background: #f3f0fa; width: 30%; }
-
-    footer { text-align: center; font-size: 0.8em; color: #666; margin: 3em 0 2em; }
-    .loading { text-align: center; color: #aaa; font-size: 0.9em; }
+    body { font-family: "Hiragino Sans","Yu Gothic",sans-serif; background:#fafafa; color:#333; margin:0; }
+    header { text-align:center; padding:2em 1em; background:linear-gradient(135deg,#aee1f9,#f6d6ff); }
+    header h1 { margin:0; font-size:2em; color:#222; }
+    header p { margin:.5em 0 0; font-size:.9em; color:#555; }
+    section { max-width:720px; margin:2em auto; padding:1.5em; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+    section h2 { border-left:6px solid #b48ef7; padding-left:.5em; font-size:1.3em; color:#444; }
+    .ranking-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .rank-item { border:1px solid #eee; border-radius:10px; padding:.6em; background:#fdfcff; }
+    .rank-item .no { font-weight:bold; color:#6a4fbf; }
+    .meta { font-size:.8em; color:#555; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { border:1px solid #eee; padding:.5em; text-align:left; }
+    th { background:#f3f0fa; width:30%; }
+    footer { text-align:center; font-size:.8em; color:#666; margin:3em 0 2em; }
+    .loading { text-align:center; color:#aaa; font-size:.9em; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>心灯｜宙のリズム占い</h1>
-  <p>理で導き、やさしさで包む — 才田流・心の調律</p>
-  <p id="today-date" style="margin-top:0.3em;font-size:0.9em;color:#555;"></p>
+  <p>理で導き、やさしさで包む — 心の調律</p>
+  <p id="today-date" style="margin-top:.3em;font-size:.9em;color:#555;"></p>
 </header>
 
 <main>
@@ -67,7 +63,7 @@
 </main>
 
 <footer>
-  <p>© 心灯 – 宙のリズム占い / produced by 一輝</p>
+  <p>© 心灯 – 宙のリズム占い</p>
 </footer>
 
 <script>
@@ -84,49 +80,36 @@ const GIST = {
   ]
 };
 
-// 🌞 今日の日付を表示
-const d = new Date();
-const w = ["日","月","火","水","木","金","土"][d.getDay()];
-const today = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${w}）`;
-document.getElementById("today-date").textContent = "🌙 本日：" + today;
+// 🌞 今日の日付
+const d=new Date(), w=["日","月","火","水","木","金","土"][d.getDay()];
+document.getElementById("today-date").textContent = `🌙 本日：${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${w}）`;
 
-// 各Gistの読み込み
-async function loadContent(id, url) {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("読み込み失敗");
-    const text = await res.text();
-    document.getElementById(id).innerHTML = text;
-  } catch (err) {
-    document.getElementById(id).innerHTML = `<p style="color:#999;">⚠️ 読み込みできませんでした</p>`;
-  }
+// 共通読込
+async function loadContent(id,url){
+  try{ const res=await fetch(url); if(!res.ok) throw 0; const t=await res.text(); document.getElementById(id).innerHTML=t; }
+  catch{ document.getElementById(id).innerHTML='<p style="color:#999;">⚠️ 読み込みできませんでした</p>'; }
 }
-
-loadContent("daily-content", GIST.daily);
-loadContent("weather-content", GIST.weather);
-loadContent("topics-content", GIST.topics);
-loadContent("lucky-content", GIST.lucky);
-loadContent("ranking-content", GIST.ranking);
+loadContent("daily-content",GIST.daily);
+loadContent("weather-content",GIST.weather);
+loadContent("topics-content",GIST.topics);
+loadContent("lucky-content",GIST.lucky);
+loadContent("ranking-content",GIST.ranking);
 
 // ブログ3件
-(async ()=>{
-  let blogHTML = "";
-  for (let url of GIST.blogs) {
-    try {
-      const res = await fetch(url);
-      const txt = await res.text();
-      const lines = txt.split("\n");
-      const title = lines[0];
-      const body = lines.slice(1).join("<br>");
-      blogHTML += `<article style="margin-bottom:1.5em;">
-        <h3 style="margin:0 0 .2em;color:#6a4fbf;">${title}</h3>
-        <p style="margin:0;font-size:0.9em;color:#555;">${body}</p>
+(async()=>{
+  let html="";
+  for(const url of GIST.blogs){
+    try{
+      const r=await fetch(url), txt=await r.text();
+      const [title,...rest]=txt.split("\n");
+      const body=rest.join("<br>");
+      html += `<article style="margin-bottom:1.5em;">
+        <h3 style="margin:0 0 .2em;color:#6a4fbf;">${title||"無題"}</h3>
+        <p style="margin:0;font-size:.9em;color:#555;">${body||""}</p>
       </article>`;
-    } catch {
-      blogHTML += `<p style="color:#999;">⚠️ 読み込みできませんでした</p>`;
-    }
+    }catch{ html += `<p style="color:#999;">⚠️ 読み込みできませんでした</p>`; }
   }
-  document.getElementById("blog-content").innerHTML = blogHTML;
+  document.getElementById("blog-content").innerHTML = html || '<p class="loading">（記事準備中）</p>';
 })();
 </script>
 
