@@ -31,6 +31,7 @@
 <header>
   <h1>心灯｜宙のリズム占い</h1>
   <p>理で導き、やさしさで包む — 才田流・心の調律</p>
+  <p id="today-date" style="margin-top:0.3em;font-size:0.9em;color:#555;"></p>
 </header>
 
 <main>
@@ -83,7 +84,14 @@ const GIST = {
   ]
 };
 
-async function loadContent(id, url, type="text") {
+// 🌞 今日の日付を表示
+const d = new Date();
+const w = ["日","月","火","水","木","金","土"][d.getDay()];
+const today = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${w}）`;
+document.getElementById("today-date").textContent = "🌙 本日：" + today;
+
+// 各Gistの読み込み
+async function loadContent(id, url) {
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error("読み込み失敗");
@@ -94,7 +102,6 @@ async function loadContent(id, url, type="text") {
   }
 }
 
-// 各Gistの読み込み
 loadContent("daily-content", GIST.daily);
 loadContent("weather-content", GIST.weather);
 loadContent("topics-content", GIST.topics);
