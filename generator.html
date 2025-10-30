@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>心灯｜index.html 自動生成ツール（最小自立版）</title>
+<title>心灯｜index.html 自動生成ツール（最小完成版）</title>
 <style>
   body{font-family:system-ui,"Hiragino Sans","Yu Gothic",sans-serif;margin:0;background:#fafafa;color:#333}
   header{padding:20px 16px;text-align:center;background:#fff;border-bottom:1px solid #eee}
@@ -37,19 +37,20 @@
     <button id="copyBtn" type="button" class="copy">📋 コピー</button>
     <button id="dlBtn"   type="button" class="dl">📥 ダウンロード</button>
   </div>
-<textarea id="out" placeholder="ここに生成された index.html が表示されます"></textarea>
-  
+
+  <!-- ★ここが“出力欄”。必ずこの1行が見えること！ -->
   <textarea id="out" placeholder="ここに生成された index.html が表示されます"></textarea>
+
   <p><small>※ iPadでコピーできない場合は「📥 ダウンロード」で保存し、GitHubへアップロードしてください。</small></p>
 </main>
 
 <script>
-// 初期日付（JSTの今日）
+// ===== 初期日付（JSTの今日） =====
 (function(){const d=new Date(),pad=n=>String(n).padStart(2,"0");
   document.getElementById("dateInput").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 })();
 
-// 干支・月ユーティリティ
+// ===== 干支・月ユーティリティ =====
 const STEMS=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 const BRANCHES=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 function jdn(y,m,d){const a=Math.floor((14-m)/12);y=y+4800-a;m=m+12*a-3;return d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;}
@@ -63,7 +64,7 @@ function seasonAccent(m,sel){const key=sel==="auto"?(m>=3&&m<=5?"spring":m>=6&&m
   return ({spring:"#b48ef7",summer:"#33a1ff",autumn:"#cc7a42",winter:"#6a8fbf"})[key];
 }
 
-// Gist（内容データRaw）
+// ===== Gist（内容データRaw） =====
 const GIST={
   daily:"https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
@@ -77,13 +78,14 @@ const GIST={
   ]
 };
 
-// ★ buildHTML（生成本体）— これが無いと動きません
+// ===== 生成本体：buildHTML =====
 function buildHTML(dateStr, seasonSel){
   const d = dateStr ? new Date(dateStr+"T00:00:00") : new Date();
   const y=d.getFullYear(), m=d.getMonth()+1, dd=d.getDate();
   const w=["日","月","火","水","木","金","土"][d.getDay()];
   const eto=etoOf(y,m,dd), moon=moonEmoji(d);
   const accent=seasonAccent(m, seasonSel||"auto");
+
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -146,17 +148,24 @@ loadTo("ranking",GIST.ranking);
 </body></html>`;
 }
 
-// クリップボード（iPad対策つき）
+// ===== クリップボード（iPad対策つき） =====
 async function copyText(text){
-  try{ if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); return true; } }
-  catch(e){}
-  try{ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
-       document.body.appendChild(ta); ta.focus(); ta.select();
-       const ok=document.execCommand("copy"); document.body.removeChild(ta); return ok; }
-  catch(e){ return false; }
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  }catch(e){}
+  try{
+    const ta=document.createElement("textarea");
+    ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok=document.execCommand("copy"); document.body.removeChild(ta);
+    return ok;
+  }catch(e){ return false; }
 }
 
-// UIイベント
+// ===== UIイベント =====
 const out=document.getElementById("out");
 document.getElementById("genBtn").addEventListener("click", ()=>{
   const dateStr=document.getElementById("dateInput").value||"";
