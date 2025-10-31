@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>心灯｜宙のリズム占い</title>
-<meta name="description" content="毎日の“宙の天気”とメッセージ。週占い・月占い・今日の色も自動更新。">
+<meta name="description" content="毎日の“宙の天気”とメッセージ。週占い・月占い・今日の色・干支ランキング（自動更新）。">
 <link rel="canonical" href="https://kokorobi.vercel.app/">
 <meta property="og:type" content="website"><meta property="og:title" content="心灯｜宙のリズム占い">
 <meta property="og:url" content="https://kokorobi.vercel.app/"><meta property="og:image" content="https://kokorobi.vercel.app/og.png">
@@ -22,7 +22,6 @@ body.night .ripple::after{animation-delay:3s}
 @keyframes waveN{0%{transform:scale(1);opacity:.45}70%{opacity:.1}100%{transform:scale(3);opacity:0}}
 body.day .ripple::before, body.day .ripple::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,225,120,.40);box-shadow:0 0 20px rgba(255,210,90,.22) inset;animation:waveD 7.5s ease-in-out infinite}
 body.day .ripple::after{animation-delay:3.75s}
-@keyframes waveD{0%{transform:scale(1);opacity:.55}80%{opacity:.12}100%{transform:scale(3.2);opacity:0}}
 .stars{position:absolute;inset:0;pointer-events:none;opacity:.22}
 body.night .stars{background:
  radial-gradient(1px 1px at 10% 25%,#fff,transparent 60%),
@@ -89,25 +88,25 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
   <section><h2>🌗 今月のリズム</h2><div class="daily">季節：秋
 方針：仕上げと収穫。記録と振り返りが財産に。
 五行ヒント：水（つなぐ力）：対話と散歩で巡り良し。</div></section>
-  <section><h2>🌠 干支ランキング</h2><div class="daily">1位  🐯 寅　勢いに乗れる。先手必勝。
-2位  🐭 子　ひらめき好調。短時間勝負◎
-3位  🐲 辰　信用が運を連れてくる。
-4位  🐰 卯　調和運。聞き役が吉。
-5位  🐮 丑　堅実運。積み上げに福。
-6位  🐵 申　情報運。まずは連絡から。
-7位  🐴 午　ケジメをつけると好転。
-8位  🐷 亥　体調ケアで運気維持。
-9位  🐶 戌　焦らず、整える一日。
-10位 🐔 酉　言葉選びを丁寧に。
-11位 🐑 未　無理は禁物。休息を。
-12位 🐍 巳　引き算の勇気が鍵。
+  <section><h2>🌠 干支ランキング</h2><div class="daily">&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#1 子（ね）&lt;/div&gt;&lt;p&gt;小さな整頓が大飛躍に直結。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：チェックリスト／炭酸水／ネイビー&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#2 辰（たつ）&lt;/div&gt;&lt;p&gt;温めてきた企画をそっと世に。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：下書き→公開／白いシャツ&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#3 申（さる）&lt;/div&gt;&lt;p&gt;橋渡し役で評価UP。第三者紹介◎。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：名刺・プロフィール整備／グレー&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#4 酉（とり）&lt;/div&gt;&lt;p&gt;最後のひと磨きで完成度UP。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：クロスで拭く／メタリック小物&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#5 丑（うし）&lt;/div&gt;&lt;p&gt;腰を据えるほど効率化。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：作業用手袋／ブラウン&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#6 卯（うさぎ）&lt;/div&gt;&lt;p&gt;静かな場所で集中力MAX。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：図書館の隅／ミント&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#7 亥（いのしし）&lt;/div&gt;&lt;p&gt;直球よりワンクッションが吉。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：試供・サンプル／ボルドー&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#8 寅（とら）&lt;/div&gt;&lt;p&gt;主導権は握りつつ、着地はソフトに。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：アロマミスト／ブラック&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#9 未（ひつじ）&lt;/div&gt;&lt;p&gt;“できる範囲”宣言で信頼UP。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：付箋／ライトベージュ&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#10 巳（へび）&lt;/div&gt;&lt;p&gt;言い過ぎ注意。クッション言葉を。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：“もしよければ”／ボタニカル柄&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#11 午（うま）&lt;/div&gt;&lt;p&gt;予定を詰めすぎない。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：スニーカー／ターコイズ&lt;/p&gt;&lt;/article&gt;
+&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#12 戌（いぬ）&lt;/div&gt;&lt;p&gt;先に充電→夕方挽回。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：甘い紅茶／アイボリー&lt;/p&gt;&lt;/article&gt;
 </div></section>
 </main>
 
 <footer>© 心灯 – 宙のリズム占い</footer>
 
 <script>
-// 宇宙の呼吸（サウンドON/OFF）
+// 宇宙の呼吸（アンビエントON/OFF）
 (()=>{let ctx,gain,osc,lfo,lfoGain;const btn=document.getElementById('ambBtn');
 function ensure(){if(ctx)return;const AC=window.AudioContext||window.webkitAudioContext;ctx=new AC();
 gain=ctx.createGain();gain.gain.value=0.0001;osc=ctx.createOscillator();osc.type='sine';osc.frequency.value=110;
