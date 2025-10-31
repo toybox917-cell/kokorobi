@@ -30,3 +30,4 @@ jobs:
           add: "index.html"
           message: "chore: auto-build index.html (JST)"
           default_author: github_actions
+
