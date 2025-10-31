@@ -273,16 +273,18 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 @media (min-width:560px){ .rank-list{grid-template-columns:1fr 1fr} }
 @media (min-width:900px){ .rank-list{grid-template-columns:1fr 1fr 1fr} }
 
-@media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
+@media (prefers-reduced-motion: reduce){ ... }
+
 /* ===== 🌸今日の運勢カラー 説明の読みやすさ調整 ===== */
-section h2 { margin-bottom: 0.6em; }
+section h2 { margin-bottom: 0.5em; }
+section .daily p,
+section .daily ul,
+section .daily li {
+  line-height: 1.5 !important;
+  margin: 0.3em 0 !important;
+}
+section .daily ul { padding-left: 1.2em; }
 
-/* 説明文（<div class="daily"> 内）の行間と段落余白を少し詰める */
-section .daily p { line-height: 1.6; margin: 0.4em 0; }
-
-/* リスト（木・火・土・金・水）の行間と余白 */
-section .daily ul { line-height: 1.6; margin: 0.6em 0 0.2em; padding-left: 1.2em; }
-section .daily li { margin: 0.25em 0; }
 </style></head>
 <body class="${bodyClass}">
 <header>
