@@ -1,7 +1,7 @@
-// build.mjs — 今日の灯 + 宙の天気 + 干支ランキング（リポジトリ内ファイル）自動挿入
+// build.mjs — 今日の灯 + 宙の天気 + 干支ランキング + Moon Breath（環境音ON/OFF）
 import { writeFileSync } from "node:fs";
 
-// ---- 設定（Raw URL: リポジトリ内テキストを参照） ----
+// ---- 参照元 ----
 const SOURCE = {
   daily:   "https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather: "https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
@@ -41,27 +41,102 @@ const html = `<!DOCTYPE html><html lang="ja"><head>
 <meta property="og:url" content="https://kokorobi.vercel.app/"><meta property="og:image" content="https://kokorobi.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="${seasonColor}">
 <style>
-:root{--accent:${seasonColor}}*{box-sizing:border-box}
+:root{--accent:${seasonColor}}
+*{box-sizing:border-box}
 body{margin:0;background:#0a0a12;color:#eaeaf2;font-family:"Hiragino Sans","Yu Gothic",sans-serif}
-header{background:linear-gradient(135deg,#f5eefc,#e7f7ff);color:#222;text-align:center;padding:28px 14px}
-header h1{margin:0;font-size:1.6rem} header p{margin:.35em 0 0}
+header{padding:0; color:#222}
+.sky{position:relative;text-align:center;padding:28px 14px 18px;
+  background:linear-gradient(135deg,#f5eefc,#e7f7ff);}
+.sky .title{font-size:1.6rem;margin:0 0 .25em}
+.sky .date{margin:.2em 0 0}
+.moon{width:90px;height:90px;margin:10px auto 6px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ffe066,#f2c14e 60%,#b3862f 100%);
+  box-shadow:0 0 26px rgba(255,214,82,.45);
+  animation:breathe 5.5s ease-in-out infinite;
+  will-change:transform,box-shadow;}
+@keyframes breathe{
+  0%,100%{transform:scale(.96);box-shadow:0 0 18px rgba(255,214,82,.35)}
+  50%{transform:scale(1.06);box-shadow:0 0 40px rgba(255,214,82,.65)}
+}
+.stars{position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background:
+    radial-gradient(1px 1px at 20% 30%,#fff,transparent 60%),
+    radial-gradient(1px 1px at 80% 20%,#fff,transparent 60%),
+    radial-gradient(1px 1px at 65% 75%,#fff,transparent 60%),
+    radial-gradient(1px 1px at 30% 60%,#fff,transparent 60%);
+  animation:twinkle 6s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.5}}
+.controls{display:flex;gap:10px;justify-content:center;margin-top:6px}
+.btn-ghost{appearance:none;background:transparent;border:1px solid #333;color:#333;
+  padding:6px 10px;border-radius:999px;font-size:.9rem}
+.btn-ghost:hover{border-color:#666}
+.info{color:#444;margin:6px 0 0}
 main{max-width:820px;margin:22px auto;padding:0 16px}
 section{background:#12121a;border:1px solid #222;border-radius:12px;padding:16px;margin:16px 0;box-shadow:0 2px 10px rgba(0,0,0,.35)}
 h2{margin:.2em 0 .6em;font-size:1.1rem;border-left:6px solid var(--accent);padding-left:.5em}
 .daily{white-space:pre-wrap;line-height:1.9}
 footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
+@media (prefers-reduced-motion: reduce){ .moon{animation:none} .stars{animation:none} }
 </style></head><body>
+
 <header>
-  <h1>心灯｜宙のリズム占い</h1>
-  <p>本日：${Y}年${M}月${D}日（${W}）</p>
-  <p style="margin:.3em 0 0;color:#444">干支日：${eto}　今夜の月：${moon}</p>
+  <div class="sky">
+    <div class="stars"></div>
+    <div class="moon" aria-hidden="true"></div>
+    <h1 class="title">心灯｜宙のリズム占い</h1>
+    <p class="date">本日：${Y}年${M}月${D}日（${W}）</p>
+    <p class="info">干支日：${eto}　今夜の月：${moon}</p>
+    <div class="controls">
+      <button id="ambBtn" class="btn-ghost" type="button">宇宙の呼吸：OFF</button>
+    </div>
+  </div>
 </header>
+
 <main>
   <section><h2>🌕 今日の灯</h2><div class="daily">${esc(dailyMsg)}</div></section>
   <section><h2>🪐 宙の天気（干支×五行）</h2><div class="daily">${esc(weatherMsg)}</div></section>
   <section><h2>🌠 干支ランキング</h2><div class="daily">${esc(rankingMsg)}</div></section>
 </main>
+
 <footer>© 心灯 – 宙のリズム占い</footer>
+
+<script>
+// WebAudioで環境音（低いハミング + ゆっくりのうねり）
+// iOS対策：ユーザー操作（ボタン）で開始
+(() => {
+  let ctx, gain, osc, lfo, lfoGain;
+  const btn = document.getElementById('ambBtn');
+
+  function ensure() {
+    if (ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    gain = ctx.createGain(); gain.gain.value = 0.0001;
+    osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 110; // 低めのハミング
+    lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.08; // ゆっくり呼吸
+    lfoGain = ctx.createGain(); lfoGain.gain.value = 0.15; // 振幅
+    lfo.connect(lfoGain).connect(gain.gain);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(); lfo.start();
+  }
+
+  btn.addEventListener('click', async () => {
+    ensure();
+    if (ctx.state === 'suspended') await ctx.resume();
+    const on = btn.dataset.playing === '1';
+    if (on) {
+      // OFFへ
+      gain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.8);
+      btn.dataset.playing = '0'; btn.textContent = '宇宙の呼吸：OFF';
+    } else {
+      // ONへ（ゆっくりフェードイン）
+      gain.gain.setTargetAtTime(0.06, ctx.currentTime, 1.2);
+      btn.dataset.playing = '1'; btn.textContent = '宇宙の呼吸：ON';
+    }
+  });
+})();
+</script>
+
 </body></html>`;
 writeFileSync("index.html", html, "utf8");
-console.log("index.html generated (daily + weather + ranking).");
+console.log("index.html generated (daily + weather + ranking + moon-breath).");
