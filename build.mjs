@@ -1,10 +1,10 @@
-// build.mjs — ランキング自動生成＋週占い・月占い・今日の色
+// build.mjs — ランキングHTMLカード自動生成 + 週/月占い + 今日の色 + 夜/昼ビジュアル + アンビエント
 import { writeFileSync } from "node:fs";
 
 const SOURCE = {
   daily:   "https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather: "https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
-  // Gistがあればその内容をランキングとして使用。無ければ自動生成に切り替え。
+  // Gistのランキング（テキストでもOK／HTMLでもOK）。取得失敗時は自動生成に切替。
   ranking: "https://gist.githubusercontent.com/toybox917-cell/c344ff836842c63913079d0a3637f1fb/raw",
   weekly:  "https://gist.githubusercontent.com/toybox917-cell/weekly.txt/raw",
   monthly: "https://gist.githubusercontent.com/toybox917-cell/monthly.txt/raw",
@@ -12,10 +12,15 @@ const SOURCE = {
 
 // ---------- util ----------
 async function fetchText(url){
-  try{ const r=await fetch(url,{cache:"no-store"}); if(!r.ok) throw 0; return r.text(); }
-  catch{ throw new Error("fetch fail"); }
+  try{
+    const r = await fetch(url, { cache: "no-store" });
+    if(!r.ok) throw 0;
+    return r.text();
+  }catch{
+    throw new Error("fetch fail");
+  }
 }
-const pad=n=>String(n).padStart(2,"0");
+const pad = n => String(n).padStart(2,"0");
 
 // 干支（日柱）
 function etoOf(y,m,d){
@@ -24,7 +29,7 @@ function etoOf(y,m,d){
   const j=d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
   return T[(j+9)%10]+Z[(j+1)%12];
 }
-// 月相
+// 月相→絵文字
 function moonEmoji(date){
   const syn=29.530588853, base=new Date(Date.UTC(2000,0,6,18,14));
   const diff=(date-base)/86400000, ph=((diff%syn)+syn)%syn;
@@ -39,20 +44,18 @@ function elementFromStem(stem){
   if("庚辛".includes(stem)) return "金";
   return "水"; // 壬癸
 }
-// 地支→五行
-const branchElem = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
+// 地支→五行/絵文字
+const branchElem  = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
 const branchEmoji = {子:"🐭",丑:"🐮",寅:"🐯",卯:"🐰",辰:"🐲",巳:"🐍",午:"🐴",未:"🐑",申:"🐵",酉:"🐔",戌:"🐶",亥:"🐗"};
-const branches = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const branches    = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 
 // 相生サイクル
-const order=["木","火","土","金","水"];
-const genNext = e => order[(order.indexOf(e)+1)%5];      // e が 生む → 次
-const genPrev = e => order[(order.indexOf(e)+4)%5];      // e を 生む ← 前
+const order   = ["木","火","土","金","水"];
+const genNext = e => order[(order.indexOf(e)+1)%5]; // eが生む→次
+const genPrev = e => order[(order.indexOf(e)+4)%5]; // eを生む←前
 
 // 日替わり乱数（シード固定）
-function seededRand(seed){ // 0..1
-  let x = Math.sin(seed)*10000; return x - Math.floor(x);
-}
+function seededRand(seed){ let x = Math.sin(seed)*10000; return x - Math.floor(x); }
 function daySeed(Y,M,D,extra=0){ return Y*10000+M*100+D+extra; }
 
 // 今日の色
@@ -101,23 +104,17 @@ function autoMonthly(month, elem){
   return `季節：${season}\n方針：${guide}\n五行ヒント：${elemLine}`;
 }
 
-// ▼ ランキング自動生成
+// ▼ ランキング自動生成（雑誌カード風のHTMLで出力）
 function autoRanking(dayElem, seedBase){
-  const templates = [
-    "勢いに乗れる。先手必勝。",
-    "ひらめき好調。短期決戦◎",
-    "信用が運を連れてくる。",
-    "調和運。聞き役が吉。",
-    "堅実運。積み上げに福。",
-    "情報運。まずは連絡から。",
-    "ケジメで好転。切り替え力。",
-    "体調ケアで運気維持。",
-    "焦らず、整える一日。",
-    "言葉選びを丁寧に。",
-    "準備が勝ち。下地づくり。",
+  const lines = [
+    "勢いに乗れる。先手必勝。", "ひらめき好調。短期決戦◎", "信用が運を連れてくる。", "調和運。聞き役が吉。",
+    "堅実運。積み上げに福。", "情報運。まずは連絡から。", "ケジメで好転。切り替え力。",
+    "体調ケアで運気維持。", "焦らず、整える一日。", "言葉選びを丁寧に。", "準備が勝ち。下地づくり。",
     "小さな優しさが大きな縁。"
   ];
-  // 点数計算：基礎70±日替わり、相生補正
+  const luckyMeta = ["チェックリスト","炭酸水","ネイビー","下書き→公開","白いシャツ","名刺・プロフィール整備","グレー",
+                     "温かい飲み物","ルーティン3つ","深呼吸","早寝","ストレッチ"];
+
   function scoreFor(branch, i){
     const be = branchElem[branch];
     let s = 70 + Math.floor(seededRand(seedBase+i)*21) - 10; // 60..80
@@ -126,18 +123,70 @@ function autoRanking(dayElem, seedBase){
     if (genNext(dayElem) === be) s += 3;        // 日→支 を生む（支が子）
     return Math.max(55, Math.min(99, s));
   }
-  const dayIdx = Math.floor(seededRand(seedBase+99)*templates.length);
-  return branches
+  const tIdx = Math.floor(seededRand(seedBase+99)*lines.length);
+
+  const rows = branches
     .map((b,i)=>({
       b,
       emoji: branchEmoji[b],
       elem: branchElem[b],
       score: scoreFor(b,i),
-      msg: templates[(dayIdx+i)%templates.length]
+      msg: lines[(tIdx+i)%lines.length],
+      meta: luckyMeta[(tIdx+i)%luckyMeta.length]
     }))
-    .sort((a,b)=>b.score-a.score)
-    .map((o,idx)=>`${idx+1}位　${o.emoji} ${o.b}　${o.msg}`)
-    .join("\n");
+    .sort((a,b)=>b.score-a.score);
+
+  // HTMLカード化
+  const html = [
+    '<div class="rank-list">',
+    ...rows.map((o,idx)=>`
+      <article class="rank-item">
+        <div class="no">#${idx+1}　${o.b}（${o.emoji}）</div>
+        <p class="lead">${o.msg}</p>
+        <p class="meta">ラッキー：${o.meta}／五行：${o.elem}</p>
+      </article>
+    `),
+    '</div>'
+  ].join("");
+
+  return html;
+}
+
+// Gistがテキストでもカード化してくれる整形関数
+function normalizeRanking(raw, dayElem, seed){
+  if(!raw) return autoRanking(dayElem, seed);
+  if(/<\/?[a-z][\s\S]*>/i.test(raw)) return raw; // 既にHTMLならそのまま
+
+  // 「1位 〜」などの行をカード化。なければ自動生成。
+  const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(lines.length === 0) return autoRanking(dayElem, seed);
+
+  const items = [];
+  for(const line of lines){
+    // 例: 「1位 子 小さな整頓が…」
+    const m = line.match(/^(\d+)[位|\.]?\s*([子丑寅卯辰巳午未申酉戌亥])?\s*(.*)$/);
+    if(m){
+      const rank = m[1], br = m[2] || branches[(items.length)%12], txt = m[3] || "";
+      items.push({rank, br, txt});
+    }else{
+      items.push({rank: String(items.length+1), br: branches[(items.length)%12], txt: line});
+    }
+  }
+  const html = [
+    '<div class="rank-list">',
+    ...items.map(it=>{
+      const elem = branchElem[it.br], emo = branchEmoji[it.br];
+      return `
+      <article class="rank-item">
+        <div class="no">#${it.rank}　${it.br}（${emo}）</div>
+        <p class="lead">${it.txt || "今日の流れに素直で吉。"}</p>
+        <p class="meta">五行：${elem}</p>
+      </article>`;
+    }),
+    '</div>'
+  ].join("");
+
+  return html;
 }
 
 // ---------- build ----------
@@ -154,16 +203,22 @@ const luckyColor = luckyColorByElement(dayElem, Wn);
 let dailyMsg="", weatherMsg="", rankingMsg="", weeklyMsg="", monthlyMsg="";
 try{ dailyMsg   = await fetchText(SOURCE.daily); }   catch{ dailyMsg   = "（今日の灯は準備中です）"; }
 try{ weatherMsg = await fetchText(SOURCE.weather);}  catch{ weatherMsg = "（宙の天気は準備中です）"; }
-// ランキング：Gistが取れなければ自動生成
-try{ rankingMsg = await fetchText(SOURCE.ranking);}  catch{
+
+// ランキング：Gist→カード整形。取れなければ自動生成。
+try{
+  const raw = await fetchText(SOURCE.ranking);
+  rankingMsg = normalizeRanking(raw, dayElem, daySeed(Y,M,D));
+}catch{
   rankingMsg = autoRanking(dayElem, daySeed(Y,M,D));
 }
+
 try{ weeklyMsg  = await fetchText(SOURCE.weekly);}   catch{ weeklyMsg  = autoWeekly(dayElem, moon); }
 try{ monthlyMsg = await fetchText(SOURCE.monthly);}  catch{ monthlyMsg = autoMonthly(M, dayElem); }
 
 const esc=s=>s.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const bodyClass = isNight ? "night" : "day";
 
+// ---------------- HTML ----------------
 const html = `<!DOCTYPE html><html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>心灯｜宙のリズム占い</title>
@@ -208,6 +263,16 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 .color-card{display:flex;align-items:center;gap:12px;background:#0f0f16;border:1px solid #222;padding:12px;border-radius:10px}
 .swatch{width:28px;height:28px;border-radius:50%;background:var(--lucky);box-shadow:0 0 10px var(--lucky)}
 .kicker{color:#bbb;margin:0}
+
+/* ランキングの雑誌カード風 */
+.rank-list{display:grid;grid-template-columns:1fr;gap:12px}
+.rank-item{background:#0f0f16;border:1px solid #23232e;border-radius:10px;padding:12px}
+.rank-item .no{font-weight:700;letter-spacing:.02em;color:#dfe3ff;margin-bottom:.25rem}
+.rank-item .lead{margin:.2rem 0 .3rem}
+.rank-item .meta{color:#9aa4c2;margin:.1rem 0 0;font-size:.92rem}
+@media (min-width:560px){ .rank-list{grid-template-columns:1fr 1fr} }
+@media (min-width:900px){ .rank-list{grid-template-columns:1fr 1fr 1fr} }
+
 @media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
 </style></head>
 <body class="${bodyClass}">
@@ -225,6 +290,7 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 
 <main>
   <section><h2>🌕 今日の灯</h2><div class="daily">${esc(dailyMsg)}</div></section>
+
   <section><h2>🎨 今日の色</h2>
     <div class="color-card">
       <div class="swatch" title="${luckyColor}"></div>
@@ -234,10 +300,16 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
       </div>
     </div>
   </section>
+
   <section><h2>🪐 宙の天気（干支×五行）</h2><div class="daily">${esc(weatherMsg)}</div></section>
   <section><h2>📅 週間の宙便り</h2><div class="daily">${esc(weeklyMsg)}</div></section>
   <section><h2>🌗 今月のリズム</h2><div class="daily">${esc(monthlyMsg)}</div></section>
-  <section><h2>🌠 干支ランキング</h2><div class="daily">${esc(rankingMsg)}</div></section>
+
+  <section>
+    <h2>🌠 干支ランキング</h2>
+    <!-- ランキングはHTMLとして挿入（エスケープしない） -->
+    ${rankingMsg}
+  </section>
 </main>
 
 <footer>© 心灯 – 宙のリズム占い</footer>
@@ -256,4 +328,4 @@ else{gain.gain.setTargetAtTime(0.06,ctx.currentTime,1.2);btn.dataset.playing='1'
 </body></html>`;
 
 writeFileSync("index.html", html, "utf8");
-console.log("index.html generated (auto-ranking enabled).");
+console.log("index.html generated (auto-ranking cards, weekly/monthly, lucky color).");
