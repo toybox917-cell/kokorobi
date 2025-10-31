@@ -42,6 +42,16 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 .color-card{display:flex;align-items:center;gap:12px;background:#0f0f16;border:1px solid #222;padding:12px;border-radius:10px}
 .swatch{width:28px;height:28px;border-radius:50%;background:var(--lucky);box-shadow:0 0 10px var(--lucky)}
 .kicker{color:#bbb;margin:0}
+
+/* ランキングの雑誌カード風 */
+.rank-list{display:grid;grid-template-columns:1fr;gap:12px}
+.rank-item{background:#0f0f16;border:1px solid #23232e;border-radius:10px;padding:12px}
+.rank-item .no{font-weight:700;letter-spacing:.02em;color:#dfe3ff;margin-bottom:.25rem}
+.rank-item .lead{margin:.2rem 0 .3rem}
+.rank-item .meta{color:#9aa4c2;margin:.1rem 0 0;font-size:.92rem}
+@media (min-width:560px){ .rank-list{grid-template-columns:1fr 1fr} }
+@media (min-width:900px){ .rank-list{grid-template-columns:1fr 1fr 1fr} }
+
 @media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
 </style></head>
 <body class="night">
@@ -67,6 +77,7 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 今日の灯：
 迷ったら“3つに絞る”。片づけ／連絡／ご褒美。
 </div></section>
+
   <section><h2>🎨 今日の色</h2>
     <div class="color-card">
       <div class="swatch" title="#3a86ff"></div>
@@ -76,6 +87,7 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
       </div>
     </div>
   </section>
+
   <section><h2>🪐 宙の天気（干支×五行）</h2><div class="daily">総テーマ：仕上げと調整。結果より「余白の美」。
 キーワード：微調整／バトンパス／水に浮かべる
 ラッキータイム：15:00–17:00
@@ -88,19 +100,24 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
   <section><h2>🌗 今月のリズム</h2><div class="daily">季節：秋
 方針：仕上げと収穫。記録と振り返りが財産に。
 五行ヒント：水（つなぐ力）：対話と散歩で巡り良し。</div></section>
-  <section><h2>🌠 干支ランキング</h2><div class="daily">&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#1 子（ね）&lt;/div&gt;&lt;p&gt;小さな整頓が大飛躍に直結。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：チェックリスト／炭酸水／ネイビー&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#2 辰（たつ）&lt;/div&gt;&lt;p&gt;温めてきた企画をそっと世に。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：下書き→公開／白いシャツ&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#3 申（さる）&lt;/div&gt;&lt;p&gt;橋渡し役で評価UP。第三者紹介◎。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：名刺・プロフィール整備／グレー&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#4 酉（とり）&lt;/div&gt;&lt;p&gt;最後のひと磨きで完成度UP。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：クロスで拭く／メタリック小物&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#5 丑（うし）&lt;/div&gt;&lt;p&gt;腰を据えるほど効率化。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：作業用手袋／ブラウン&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#6 卯（うさぎ）&lt;/div&gt;&lt;p&gt;静かな場所で集中力MAX。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：図書館の隅／ミント&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#7 亥（いのしし）&lt;/div&gt;&lt;p&gt;直球よりワンクッションが吉。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：試供・サンプル／ボルドー&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#8 寅（とら）&lt;/div&gt;&lt;p&gt;主導権は握りつつ、着地はソフトに。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：アロマミスト／ブラック&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#9 未（ひつじ）&lt;/div&gt;&lt;p&gt;“できる範囲”宣言で信頼UP。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：付箋／ライトベージュ&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#10 巳（へび）&lt;/div&gt;&lt;p&gt;言い過ぎ注意。クッション言葉を。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：“もしよければ”／ボタニカル柄&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#11 午（うま）&lt;/div&gt;&lt;p&gt;予定を詰めすぎない。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：スニーカー／ターコイズ&lt;/p&gt;&lt;/article&gt;
-&lt;article class="rank-item"&gt;&lt;div class="no"&gt;#12 戌（いぬ）&lt;/div&gt;&lt;p&gt;先に充電→夕方挽回。&lt;/p&gt;&lt;p class="meta"&gt;ラッキー：甘い紅茶／アイボリー&lt;/p&gt;&lt;/article&gt;
-</div></section>
+
+  <section>
+    <h2>🌠 干支ランキング</h2>
+    <!-- ランキングはHTMLとして挿入（エスケープしない） -->
+    <article class="rank-item"><div class="no">#1 子（ね）</div><p>小さな整頓が大飛躍に直結。</p><p class="meta">ラッキー：チェックリスト／炭酸水／ネイビー</p></article>
+<article class="rank-item"><div class="no">#2 辰（たつ）</div><p>温めてきた企画をそっと世に。</p><p class="meta">ラッキー：下書き→公開／白いシャツ</p></article>
+<article class="rank-item"><div class="no">#3 申（さる）</div><p>橋渡し役で評価UP。第三者紹介◎。</p><p class="meta">ラッキー：名刺・プロフィール整備／グレー</p></article>
+<article class="rank-item"><div class="no">#4 酉（とり）</div><p>最後のひと磨きで完成度UP。</p><p class="meta">ラッキー：クロスで拭く／メタリック小物</p></article>
+<article class="rank-item"><div class="no">#5 丑（うし）</div><p>腰を据えるほど効率化。</p><p class="meta">ラッキー：作業用手袋／ブラウン</p></article>
+<article class="rank-item"><div class="no">#6 卯（うさぎ）</div><p>静かな場所で集中力MAX。</p><p class="meta">ラッキー：図書館の隅／ミント</p></article>
+<article class="rank-item"><div class="no">#7 亥（いのしし）</div><p>直球よりワンクッションが吉。</p><p class="meta">ラッキー：試供・サンプル／ボルドー</p></article>
+<article class="rank-item"><div class="no">#8 寅（とら）</div><p>主導権は握りつつ、着地はソフトに。</p><p class="meta">ラッキー：アロマミスト／ブラック</p></article>
+<article class="rank-item"><div class="no">#9 未（ひつじ）</div><p>“できる範囲”宣言で信頼UP。</p><p class="meta">ラッキー：付箋／ライトベージュ</p></article>
+<article class="rank-item"><div class="no">#10 巳（へび）</div><p>言い過ぎ注意。クッション言葉を。</p><p class="meta">ラッキー：“もしよければ”／ボタニカル柄</p></article>
+<article class="rank-item"><div class="no">#11 午（うま）</div><p>予定を詰めすぎない。</p><p class="meta">ラッキー：スニーカー／ターコイズ</p></article>
+<article class="rank-item"><div class="no">#12 戌（いぬ）</div><p>先に充電→夕方挽回。</p><p class="meta">ラッキー：甘い紅茶／アイボリー</p></article>
+
+  </section>
 </main>
 
 <footer>© 心灯 – 宙のリズム占い</footer>
