@@ -1,0 +1,32 @@
+name: Daily Build (JST)
+
+on:
+  schedule:
+    # 毎日 00:15 JST に実行（JST=UTC+9 → 15:15 UTC）
+    - cron: "15 15 * * *"
+  workflow_dispatch: {}  # 手動実行ボタンも出す
+
+permissions:
+  contents: write  # index.html をコミットする権限
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate index.html
+        run: node build.mjs
+
+      - name: Commit & Push
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "index.html"
+          message: "chore: auto-build index.html (JST)"
+          default_author: github_actions
