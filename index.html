@@ -5,9 +5,9 @@
 <link rel="canonical" href="https://kokorobi.vercel.app/">
 <meta property="og:type" content="website"><meta property="og:title" content="心灯｜宙のリズム占い">
 <meta property="og:url" content="https://kokorobi.vercel.app/"><meta property="og:image" content="https://kokorobi.vercel.app/og.png">
-<meta name="theme-color" content="#3a86ff">
+<meta name="theme-color" content="#2fa36b">
 <style>
-:root{ --accent:#cc7a42; --lucky:#3a86ff; }
+:root{ --accent:#cc7a42; --lucky:#2fa36b; }
 *{box-sizing:border-box} body{margin:0;background:#0a0a12;color:#eaeaf2;font-family:"Hiragino Sans","Yu Gothic",sans-serif}
 .sky{position:relative;text-align:center;padding:28px 14px 18px;overflow:hidden}
 body.day .sky{background:linear-gradient(135deg,#f7f3ff,#eaf7ff)}
@@ -52,16 +52,18 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 @media (min-width:560px){ .rank-list{grid-template-columns:1fr 1fr} }
 @media (min-width:900px){ .rank-list{grid-template-columns:1fr 1fr 1fr} }
 
-@media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
+@media (prefers-reduced-motion: reduce){ ... }
+
 /* ===== 🌸今日の運勢カラー 説明の読みやすさ調整 ===== */
-section h2 { margin-bottom: 0.6em; }
+section h2 { margin-bottom: 0.5em; }
+section .daily p,
+section .daily ul,
+section .daily li {
+  line-height: 1.5 !important;
+  margin: 0.3em 0 !important;
+}
+section .daily ul { padding-left: 1.2em; }
 
-/* 説明文（<div class="daily"> 内）の行間と段落余白を少し詰める */
-section .daily p { line-height: 1.6; margin: 0.4em 0; }
-
-/* リスト（木・火・土・金・水）の行間と余白 */
-section .daily ul { line-height: 1.6; margin: 0.6em 0 0.2em; padding-left: 1.2em; }
-section .daily li { margin: 0.25em 0; }
 </style></head>
 <body class="night">
 <header>
@@ -70,8 +72,8 @@ section .daily li { margin: 0.25em 0; }
     <div class="ripple"></div>
     <div class="moon" aria-hidden="true"></div>
     <h1 class="title">心灯｜宙のリズム占い</h1>
-    <p class="date">本日：2025年10月31日（金）</p>
-    <p class="info">干支日：癸酉（五行：水）　今夜の月：🌔</p>
+    <p class="date">本日：2025年11月1日（土）</p>
+    <p class="info">干支日：甲戌（五行：木）　今夜の月：🌔</p>
     <button id="ambBtn" class="btn-ghost" type="button">宇宙の呼吸：OFF</button>
   </div>
 </header>
@@ -89,9 +91,9 @@ section .daily li { margin: 0.25em 0; }
 
   <section><h2>🎨 今日の色</h2>
     <div class="color-card">
-      <div class="swatch" title="#3a86ff"></div>
+      <div class="swatch" title="#2fa36b"></div>
       <div>
-        <p class="kicker">五行：水 ｜ カラー：<code>#3a86ff</code></p>
+        <p class="kicker">五行：木 ｜ カラー：<code>#2fa36b</code></p>
         <div class="daily">この色を“身につける／画面に映す／メモに引く”と整いやすい。</div>
       </div>
     </div>
@@ -103,12 +105,12 @@ section .daily li { margin: 0.25em 0; }
 開運アクション：やることを3つに絞る（片づけ／連絡／ご褒美）
 五行：水
 </div></section>
-  <section><h2>📅 週間の宙便り</h2><div class="daily">総評：流れに乗る。しなやかに方向転換で開運。
+  <section><h2>📅 週間の宙便り</h2><div class="daily">総評：芽を伸ばす“調律週間”。小さな成長を積み重ねて。
 月相：ゆるく満ち欠け。心身のリズムに耳を。
 鍵：連絡・整頓・深呼吸</div></section>
   <section><h2>🌗 今月のリズム</h2><div class="daily">季節：秋
 方針：仕上げと収穫。記録と振り返りが財産に。
-五行ヒント：水（つなぐ力）：対話と散歩で巡り良し。</div></section>
+五行ヒント：木（伸びる力）：ストレッチ・学び日和。</div></section>
 
   <section>
     <h2>🌠 干支ランキング</h2>
