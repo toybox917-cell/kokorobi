@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>心灯｜宙のリズム占い</title>
 <meta name="description" content="理で導き、やさしさで包む——毎日の“宙の天気”とメッセージを配信。">
-<!-- OGP（og.png をリポジトリ直下に置けばOK） -->
+<link rel="canonical" href="https://kokorobi.vercel.app/">
+<!-- OGP（任意：リポジトリ直下に og.png を置けばSNSカードが出ます） -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="心灯｜宙のリズム占い">
 <meta property="og:description" content="理で導き、やさしさで包む——毎日の“宙の天気”とメッセージを配信。">
@@ -46,7 +47,7 @@
 <footer>© 心灯 – 宙のリズム占い</footer>
 
 <script>
-// ===== JSTの今日・干支日・月 emoji =====
+// ===== 日付（JST）・干支・月絵文字 =====
 const STEMS=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 const BRANCHES=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 function jdn(y,m,d){const a=Math.floor((14-m)/12);y=y+4800-a;m=m+12*a-3;return d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;}
@@ -56,22 +57,20 @@ function moonEmoji(date){const syn=29.530588853,base=new Date(Date.UTC(2000,0,6,
   if(ph<1.5)return"🌑"; if(ph<6)return"🌒"; if(ph<8)return"🌓"; if(ph<14)return"🌔";
   if(ph<16)return"🌕"; if(ph<21)return"🌖"; if(ph<23)return"🌗"; return"🌘";
 }
+// 今日表示（JST）
 (function showToday(){
-  const tz="Asia/Tokyo";
-  const d=new Date();
+  const tz="Asia/Tokyo"; const d=new Date();
   const parts=new Intl.DateTimeFormat('ja-JP',{timeZone:tz,year:'numeric',month:'numeric',day:'numeric',weekday:'short'}).formatToParts(d);
-  const get=t=>parts.find(x=>x.type===t)?.value;
-  const y=new Intl.DateTimeFormat('ja-JP',{timeZone:tz,year:'numeric'}).format(d);
-  const m=get('month'), day=get('day'), w=get('weekday');
+  const y=Number(parts.find(x=>x.type==='year').value);
+  const m=Number(parts.find(x=>x.type==='month').value);
+  const day=Number(parts.find(x=>x.type==='day').value);
+  const w=parts.find(x=>x.type==='weekday').value;
   document.getElementById('today').textContent=`本日：${y}年${m}月${day}日（${w}）`;
-  // JST 0:00 相当で干支・月を評価
   const jst0=new Date(`${y}-${String(m).padStart(2,"0")}-${String(day).padStart(2,"0")}T00:00:00+09:00`);
-  const eto=etoOf(Number(y),Number(m),Number(day));
-  const moon=moonEmoji(jst0);
-  document.getElementById('eto-moon').textContent=`干支日：${eto}　今夜の月：${moon}`;
+  document.getElementById('eto-moon').textContent=`干支日：${etoOf(y,m,day)}　今夜の月：${moonEmoji(jst0)}`;
 })();
 
-// ===== Gist（内容データRaw）を読み込み =====
+// ===== Gist（Raw）を読み込み =====
 const GIST={
   daily:"https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather:"https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
@@ -91,7 +90,9 @@ async function loadTo(id,url){
     if(!r.ok) throw 0;
     el.innerHTML=await r.text();
     el.classList.remove('loading');
-  }catch{ el.textContent="⚠️ 読み込みできませんでした"; }
+  }catch{
+    el.textContent="⚠️ 読み込みできませんでした";
+  }
 }
 loadTo("daily",GIST.daily);
 loadTo("weather",GIST.weather);
@@ -102,8 +103,10 @@ loadTo("ranking",GIST.ranking);
 (async()=>{
   const host=document.getElementById("blogs"); let html="";
   for(const u of GIST.blogs){
-    try{const r=await fetch(u,{cache:"no-store"});const t=await r.text();
-      const [h,...b]=t.split("\n"); html+=`<article><h3>${h||"無題"}</h3><p>${b.join("<br>")}</p></article>`;
+    try{
+      const r=await fetch(u,{cache:"no-store"}); const t=await r.text();
+      const [h,...b]=t.split("\n");
+      html += `<article><h3>${h||"無題"}</h3><p>${b.join("<br>")}</p></article>`;
     }catch{}
   }
   host.innerHTML=html||"（記事準備中）"; host.classList.remove('loading');
