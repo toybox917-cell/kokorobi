@@ -1,26 +1,29 @@
-// build.mjs — 心灯｜宙のリズム占い（完全版）
-//  - 週占い / 月占い / 今日の色
-//  - 干支ランキング（雑誌カード風）自動生成＋手動テキスト併用
-//  - Gist/ローカル(fallback)両対応
-//  - 夜/昼のアニメ背景・アンビエントON/OFF
+// build.mjs — 心灯｜完全版（昼可読性 + カラー説明行間調整 + 雑誌カード風ランキング）
+// Node18+ / GitHub Actions (JST) 用
 
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
+import { writeFileSync, existsSync, readFileSync } from "node:fs";
 
-// ====== 可変ソース ======
+// ====== ソース定義（存在すれば優先。無ければ自動生成へ） ======
 const SOURCE = {
-  // ① “今日の灯” と “宙の天気” は Gist を使う（あなたの既存URLのまま）
   daily:   "https://gist.githubusercontent.com/toybox917-cell/5cc5efcc825f7cc57f0e7b49ff9dc7c5/raw",
   weather: "https://gist.githubusercontent.com/toybox917-cell/95124527b68524c2b4d551c7cbb5a14b/raw",
+  ranking: "https://gist.githubusercontent.com/toybox917-cell/c344ff836842c63913079d0a3637f1fb/raw",
+  weekly:  "https://raw.githubusercontent.com/toybox917-cell/kokorobi/main/weekly.txt",
+  monthly: "https://raw.githubusercontent.com/toybox917-cell/kokorobi/main/monthly.txt",
+};
 
-  // ② ランキング/週占い/月占いは レポ内ファイル優先（あればそれを使用）
-  rankingLocal: "ranking.txt",
-  weeklyLocal:  "weekly.txt",
-  monthlyLocal: "monthly.txt",
+// リポ内の同名ファイルがあればそれを最優先に使う
+function preferLocal(path, fallbackUrl) {
+  if (existsSync(path)) return { type: "local", ref: path };
+  return { type: "url", ref: fallbackUrl };
+}
 
-  // ③ （オプション）Gist 側があるならフォールバックで読む
-  rankingGist: "https://gist.githubusercontent.com/toybox917-cell/c344ff836842c63913079d0a3637f1fb/raw",
-  weeklyGist:  "https://gist.githubusercontent.com/toybox917-cell/weekly.txt/raw",
-  monthlyGist: "https://gist.githubusercontent.com/toybox917-cell/monthly.txt/raw",
+const SRC_PREF = {
+  daily:   preferLocal("daily.txt",   SOURCE.daily),
+  weather: preferLocal("eto-ranking.txt", SOURCE.weather), // 互換名そのまま維持
+  ranking: preferLocal("ranking.txt", SOURCE.ranking),
+  weekly:  preferLocal("weekly.txt",  SOURCE.weekly),
+  monthly: preferLocal("monthly.txt", SOURCE.monthly),
 };
 
 // ---------- util ----------
@@ -29,13 +32,9 @@ async function fetchText(url){
   if (!r.ok) throw new Error("fetch fail");
   return r.text();
 }
-const pad=n=>String(n).padStart(2,"0");
+const readMaybe = p => existsSync(p) ? readFileSync(p, "utf8") : "";
 
-// ファイル→テキスト（無ければ throw）
-function readLocal(path){
-  if(!existsSync(path)) throw new Error("no local");
-  return readFileSync(path,"utf8");
-}
+const pad = n => String(n).padStart(2,"0");
 
 // 干支（日柱）
 function etoOf(y,m,d){
@@ -44,7 +43,7 @@ function etoOf(y,m,d){
   const j=d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
   return T[(j+9)%10]+Z[(j+1)%12];
 }
-// 月相→絵文字
+// 月相
 function moonEmoji(date){
   const syn=29.530588853, base=new Date(Date.UTC(2000,0,6,18,14));
   const diff=(date-base)/86400000, ph=((diff%syn)+syn)%syn;
@@ -59,21 +58,21 @@ function elementFromStem(stem){
   if("庚辛".includes(stem)) return "金";
   return "水"; // 壬癸
 }
-// 地支→五行/絵文字
+// 地支→五行
 const branchElem = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
-const branchEmoji= {子:"🐭",丑:"🐮",寅:"🐯",卯:"🐰",辰:"🐲",巳:"🐍",午:"🐴",未:"🐑",申:"🐵",酉:"🐔",戌:"🐶",亥:"🐗"};
-const branches   = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const branchEmoji = {子:"🐭",丑:"🐮",寅:"🐯",卯:"🐰",辰:"🐲",巳:"🐍",午:"🐴",未:"🐑",申:"🐵",酉:"🐔",戌:"🐶",亥:"🐗"};
+const branches = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 
 // 相生サイクル
 const order=["木","火","土","金","水"];
-const genNext = e => order[(order.indexOf(e)+1)%5]; // e が 生む → 次
-const genPrev = e => order[(order.indexOf(e)+4)%5]; // e を 生む ← 前
+const genNext = e => order[(order.indexOf(e)+1)%5];      // e が 生む → 次
+const genPrev = e => order[(order.indexOf(e)+4)%5];      // e を 生む ← 前
 
 // 日替わり乱数（シード固定）
 function seededRand(seed){ let x = Math.sin(seed)*10000; return x - Math.floor(x); }
 function daySeed(Y,M,D,extra=0){ return Y*10000+M*100+D+extra; }
 
-// 今日の色
+// 今日の色（五行×曜日ローテ）
 function luckyColorByElement(elem, weekday){
   const colors = {
     "木": ["#2ecc71","#27ae60","#1abc9c","#16a085","#23b27e","#3bd199","#2fa36b"],
@@ -119,92 +118,38 @@ function autoMonthly(month, elem){
   return `季節：${season}\n方針：${guide}\n五行ヒント：${elemLine}`;
 }
 
-// --- 五行カラーのレジェンド定義＆HTML生成
-const ELEMENT_INFO = {
-  "木": { desc: "成長・発展・優しさ", colors: ["#2ecc71", "#27ae60", "#1abc9c"] },
-  "火": { desc: "行動・情熱・勇気",   colors: ["#e74c3c", "#ff7a59", "#e67e22"] },
-  "土": { desc: "安定・整える力",     colors: ["#f1c40f", "#f39c12", "#d4a373"] },
-  "金": { desc: "磨く・洗練・価値",   colors: ["#d4af37", "#c0c0c0", "#ecf0f1"] },
-  "水": { desc: "巡り・つながり",     colors: ["#3498db", "#2980b9", "#6c5ce7"] }
-};
-function colorLegendHTML(){
-  const items = Object.entries(ELEMENT_INFO).map(([elem, info])=>{
-    const dots = info.colors.slice(0,3)
-      .map(c=>`<span class="sw" style="--c:${c}" title="${c}"></span>`)
-      .join("");
-    return `
-      <li>
-        <div class="row">
-          <div class="dots">${dots}</div>
-          <div class="meta"><b>${elem}</b>：<code>${info.colors[0]}</code> — ${info.desc}</div>
-        </div>
-      </li>`;
-  }).join("");
-  return `<ul class="color-legend">${items}</ul>`;
-}
-
-// ▼ ランキング自動（点数＋短評）
-function autoRanking(dayElem, seedBase){
+// ▼ ランキング（雑誌カード風 HTML）を自動生成
+function autoRankingHTML(dayElem, seedBase){
   const lines = [
-    "勢いに乗れる。先手必勝。",
-    "ひらめき好調。短期決戦◎",
-    "信用が運を連れてくる。",
-    "調和運。聞き役が吉。",
-    "堅実運。積み上げに福。",
-    "情報運。まずは連絡から。",
-    "ケジメで好転。切り替え力。",
-    "体調ケアで運気維持。",
-    "焦らず、整える一日。",
-    "言葉選びを丁寧に。",
-    "準備が勝ち。下地づくり。",
-    "小さな優しさが大きな縁。"
+    "勢いに乗れる。先手必勝。","ひらめき好調。短期決戦◎","信用が運を連れてくる。","調和運。聞き役が吉。",
+    "堅実運。積み上げに福。","情報運。まずは連絡から。","ケジメで好転。切り替え力。","体調ケアで運気維持。",
+    "焦らず整える日。","言葉選びを丁寧に。","準備が勝ち。下地づくり。","小さな優しさが大きな縁。"
   ];
   function scoreFor(branch, i){
     const be = branchElem[branch];
     let s = 70 + Math.floor(seededRand(seedBase+i)*21) - 10; // 60..80
-    if (be === dayElem) s += 8;                 // 同元素 強
-    if (genNext(be) === dayElem) s += 5;        // 支→日 を生む
-    if (genNext(dayElem) === be) s += 3;        // 日→支 を生む
+    if (be === dayElem) s += 8;
+    if (genNext(be) === dayElem) s += 5;
+    if (genNext(dayElem) === be) s += 3;
     return Math.max(55, Math.min(99, s));
   }
-  const idx = Math.floor(seededRand(seedBase+99)*lines.length);
-  return branches
+  const picks = branches
     .map((b,i)=>({
       b, emoji: branchEmoji[b], elem: branchElem[b],
       score: scoreFor(b,i),
-      msg: lines[(idx+i)%lines.length]
+      msg: lines[(Math.floor(seededRand(seedBase+99)*lines.length)+i)%lines.length]
     }))
     .sort((a,b)=>b.score-a.score);
-}
-// 雑誌カード風HTMLに整形
-function rankingCardsHTML(items){
-  return items.map((o,i)=>`
-    <article class="rank-card">
-      <div class="rank-no">#${i+1}</div>
-      <div class="rank-body">
-        <div class="rank-title">${o.emoji} ${o.b}（${kanaOf(o.b)}）</div>
-        <p class="rank-copy">${o.msg}</p>
-        <p class="rank-meta">ラッキー：${luckyTip(o)}</p>
-      </div>
-      <div class="rank-score">${o.score}</div>
-    </article>
-  `).join("");
-}
-// 地支→仮名
-function kanaOf(b){ return {子:"ね",丑:"うし",寅:"とら",卯:"う",辰:"たつ",巳:"み",午:"うま",未:"ひつじ",申:"さる",酉:"とり",戌:"いぬ",亥:"い"}[b]; }
-// ラッキー小ネタ（色やアイテムをゆるく）
-function luckyTip(o){
-  const table = {
-    "木": ["チェックリスト","グリーン","ストレッチ"],
-    "火": ["赤系アクセ","発信・連絡","ガッツポーズ"],
-    "土": ["整頓5分","ノート","ベージュ"],
-    "金": ["名刺・プロフィール","磨く作業","メタル色"],
-    "水": ["炭酸水","散歩","ネイビー"]
-  }[o.elem] || ["深呼吸","水分補給","やさしい一言"];
-  return table.join("／");
+
+  return picks.map((o,idx)=>`
+  <article class="rank-card">
+    <div class="no">#${idx+1} ${o.b}（${o.emoji}）</div>
+    <p>${o.msg}</p>
+    <p class="meta">ラッキー：${o.elem}の気を入れる／小物１点</p>
+  </article>`).join("");
 }
 
-// ---------- build ----------
+// ---------- 時刻／日付 ----------
 const now = new Date();
 const jst = new Date(now.toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
 const Y=jst.getFullYear(), M=jst.getMonth()+1, D=jst.getDate(), H=jst.getHours(), Wn=jst.getDay();
@@ -215,48 +160,39 @@ const isNight = (H>=18||H<6);
 const seasonColor = (M>=3&&M<=5)?"#b48ef7":(M>=6&&M<=8)?"#33a1ff":(M>=9&&M<=11)?"#cc7a42":"#6a8fbf";
 const luckyColor = luckyColorByElement(dayElem, Wn);
 
-let dailyMsg="", weatherMsg="", weeklyMsg="", monthlyMsg="", rankingHTML="";
-
-// fetch/ローカル優先読み
-try{ dailyMsg   = await fetchText(SOURCE.daily); }   catch{ dailyMsg   = "（今日の灯は準備中です）"; }
-try{ weatherMsg = await fetchText(SOURCE.weather);}  catch{ weatherMsg = "（宙の天気は準備中です）"; }
-
-try{ weeklyMsg  = readLocal(SOURCE.weeklyLocal); }  catch{
-  try{ weeklyMsg = await fetchText(SOURCE.weeklyGist); } catch{ weeklyMsg = autoWeekly(dayElem, moon); }
-}
-try{ monthlyMsg = readLocal(SOURCE.monthlyLocal);}  catch{
-  try{ monthlyMsg = await fetchText(SOURCE.monthlyGist);} catch{ monthlyMsg = autoMonthly(M, dayElem); }
-}
-
-// ランキング：優先順 1) レポ内 ranking.txt（HTML/テキスト両対応）→ 2) Gist → 3) 自動生成
-function looksLikeHTML(t){ return /<\s*(article|div|ul|li|section|p|span)/i.test(t); }
-try{
-  let raw = readLocal(SOURCE.rankingLocal);
-  rankingHTML = looksLikeHTML(raw) ? raw : textRankingToCards(raw);
-}catch{
-  try{
-    const raw = await fetchText(SOURCE.rankingGist);
-    rankingHTML = looksLikeHTML(raw) ? raw : textRankingToCards(raw);
-  }catch{
-    rankingHTML = rankingCardsHTML( autoRanking(dayElem, daySeed(Y,M,D)) );
+// ---------- コンテンツ取得（ローカル優先 → URL → 自動文） ----------
+async function getText(src, autoGen){
+  if (src.type==="local"){
+    const t=readMaybe(src.ref).trim();
+    if (t) return t;
   }
-}
-// 1行テキスト→カードに整形（「1位 子 …」などを li->cards 化）
-function textRankingToCards(t){
-  const items = t.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map((line,i)=>{
-    // 例: "1位　🐯 寅　勢いに乗れる。先手必勝。"
-    const m = line.match(/^\D*(\d+)\D+([🐭🐮🐯🐰🐲🐍🐴🐑🐵🐔🐶🐗])?\s*([子丑寅卯辰巳午未申酉戌亥])\D+(.*)$/);
-    const b = m?.[3] ?? branches[i%12];
-    const msg = m?.[4]?.trim() || line.replace(/^\d+\D+/,"");
-    const elem = branchElem[b];
-    return { b, emoji: branchEmoji[b], elem, score: 70 + (i? (12-i)*2 : 26), msg };
-  });
-  return rankingCardsHTML(items);
+  if (src.type==="url"){
+    try{ const t=await fetchText(src.ref); if(t.trim()) return t; }catch{}
+  }
+  return autoGen();
 }
 
 const esc=s=>s.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const bodyClass = isNight ? "night" : "day";
 
+const dailyMsg   = await getText(SRC_PREF.daily,   ()=>"（今日の灯は準備中です）");
+const weatherMsg = await getText(SRC_PREF.weather, ()=>"（宙の天気は準備中です）");
+
+// ランキング：テキストがあればそのまま、無ければ HTML 自動生成
+let rankingBlock;
+{
+  let text = await getText(SRC_PREF.ranking, ()=>"");
+  if (text) {
+    rankingBlock = `<pre class="daily">${esc(text)}</pre>`;
+  } else {
+    rankingBlock = `<div class="rank-grid">${autoRankingHTML(dayElem, daySeed(Y,M,D))}</div>`;
+  }
+}
+
+const weeklyMsg  = await getText(SRC_PREF.weekly,  ()=>autoWeekly(dayElem, moon));
+const monthlyMsg = await getText(SRC_PREF.monthly, ()=>autoMonthly(M, dayElem));
+
+// ---------- HTML 出力 ----------
+const bodyClass = isNight ? "night" : "day";
 const html = `<!DOCTYPE html><html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>心灯｜宙のリズム占い</title>
@@ -266,8 +202,8 @@ const html = `<!DOCTYPE html><html lang="ja"><head>
 <meta property="og:url" content="https://kokorobi.vercel.app/"><meta property="og:image" content="https://kokorobi.vercel.app/og.png">
 <meta name="theme-color" content="${luckyColor}">
 <style>
-:root{ --accent:${seasonColor}; --lucky:${luckyColor}; }
-*{box-sizing:border-box} body{margin:0;background:#0a0a12;color:#eaeaf2;font-family:"Hiragino Sans","Yu Gothic",sans-serif}
+:root{ --accent:${seasonColor}; --lucky:${luckyColor}; --card:#12121a; --ink:#eaeaf2; --ink-soft:#cfd3ff; --ink-day:#222; --ink-day-soft:#333; --card-day:#f9f9fb; --card-day-border:#ccc; }
+*{box-sizing:border-box} body{margin:0;background:#0a0a12;color:var(--ink);font-family:"Hiragino Sans","Yu Gothic",system-ui,-apple-system,sans-serif}
 .sky{position:relative;text-align:center;padding:28px 14px 18px;overflow:hidden}
 body.day .sky{background:linear-gradient(135deg,#f7f3ff,#eaf7ff)}
 body.night .sky{background:radial-gradient(circle at 50% -10%,#23335a,#0b0f1a 60%)}
@@ -294,51 +230,39 @@ body.night .stars{background:
 .date,.info{margin:.2em 0 0}
 .btn-ghost{appearance:none;background:#1118;border:1px solid #333;color:#dfe3ff;padding:6px 10px;border-radius:999px;font-size:.9rem}
 main{max-width:820px;margin:22px auto;padding:0 16px}
-section{background:#12121a;border:1px solid #222;border-radius:12px;padding:16px;margin:16px 0;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+section{background:var(--card);border:1px solid #222;border-radius:12px;padding:16px;margin:16px 0;box-shadow:0 2px 10px rgba(0,0,0,.35)}
 h2{margin:.2em 0 .6em;font-size:1.1rem;border-left:6px solid var(--accent);padding-left:.5em}
-.daily{white-space:pre-wrap;line-height:1.9}
+.daily{white-space:pre-wrap;line-height:1.85}
 footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
-.color-card{display:flex;align-items:center;gap:12px;background:#0f0f16;border:1px solid #222;padding:12px;border-radius:10px}
-.swatch{width:28px;height:28px;border-radius:50%;background:var(--lucky);box-shadow:0 0 10px var(--lucky)}
-.kicker{color:#bbb;margin:0}
-/* ===== ランキング（雑誌カード風） ===== */
-.rank-card{display:grid;grid-template-columns:58px 1fr 56px;gap:10px;align-items:center;background:#0f0f16;border:1px solid #222;border-radius:12px;padding:12px;margin:10px 0}
-.rank-no{font-weight:700;color:#fff;background:linear-gradient(180deg,var(--accent),#333);border-radius:10px;text-align:center;padding:6px 0}
-.rank-body .rank-title{font-weight:700;margin-bottom:4px}
-.rank-body .rank-copy{margin:.2em 0 .2em;color:#ddd}
-.rank-meta{color:#aab}
-.rank-score{font-weight:800;font-size:1.2rem;text-align:right;color:#ffd86b}
-/* ===== 🌸 今日の運勢カラー レジェンド ===== */
-.color-legend{ list-style:none; padding:0; margin:12px 0 4px; }
-.color-legend li{ background:#0f0f16; border:1px solid #222; border-radius:12px; padding:10px 12px; margin:10px 0; }
-.color-legend .row{ display:flex; align-items:center; gap:12px; }
-.color-legend .dots{ display:flex; gap:6px; min-width:84px; }
-.color-legend .sw{ width:18px; height:18px; border-radius:50%; background:var(--c); box-shadow:0 0 10px var(--c,transparent); display:inline-block; }
-.color-legend .meta b{ margin-right:.35em; }
-@media (max-width:420px){ .color-legend .row{ align-items:flex-start; } .color-legend .dots{ min-width:66px; } }
+
+/* ===== 雑誌カード風 ランキング ===== */
+.rank-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.rank-card{background:#0f0f16;border:1px solid #23232f;border-radius:10px;padding:12px}
+.rank-card .no{font-weight:700;margin-bottom:4px;color:var(--ink-soft)}
+.rank-card p{margin:.35em 0 0;line-height:1.6}
+.rank-card .meta{color:#9aa0bf;font-size:.92rem}
+
+/* ===== 🌸 今日の運勢カラー レジェンド（行間詰め） ===== */
+.color-legend{ list-style:none; padding:0; margin:8px 0 0 0;}
+.color-legend li{ background:#0f0f16; border:1px solid #222; border-radius:12px; padding:8px 12px; margin:8px 0;}
+.color-legend .row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.color-legend .dots{ display:flex; gap:6px; align-items:center }
+.color-legend .sw{ width:18px; height:18px; border-radius:50%; box-shadow:0 0 12px var(--lucky); }
+.color-legend .meta b{ margin-right:4px}
+.color-explain{ line-height:1.7; margin:10px 0 2px 0; color:#cfd3ff}
+@media (max-width:420px){ .color-legend .row{ gap:8px } }
 @media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
-/* ===== 昼モードの文字見やすさ調整 ===== */
-body.day {
-  color: #222;
-}
-body.day section {
-  background: #f9f9fb;
-  color: #333;
-  border-color: #ccc;
-}
-body.day h2 {
-  color: #111;
-  border-left-color: #e5b800;
-}
-body.day .rank-card {
-  background: #fff;
-  border-color: #ddd;
-}
-body.day .rank-body .rank-copy { color: #444; }
-body.day .rank-meta { color: #666; }
-body.day footer { color: #555; }
-body.day code { color: #555; background:#efefef; padding:2px 4px; border-radius:4px; }
+
+/* ===== 昼モード見やすさ（文字・カード・枠） ===== */
+body.day{ color: var(--ink-day); }
+body.day section{ background: var(--card-day); color: var(--ink-day); border-color: var(--card-day-border); }
+body.day h2{ border-left-color: var(--accent); color:#111 }
+body.day .daily{ color:#111; }
+body.day .rank-card{ background:#fff; border-color:#e6e6e6; }
+body.day .rank-card .meta{ color:#667 }
+body.day .color-explain{ color:#555 }
 </style></head>
+
 <body class="${bodyClass}">
 <header>
   <div class="sky">
@@ -357,32 +281,42 @@ body.day code { color: #555; background:#efefef; padding:2px 4px; border-radius:
 
   <section><h2>🎨 今日の色</h2>
     <div class="color-card">
-      <div class="swatch" title="${luckyColor}"></div>
-      <div>
-        <p class="kicker">五行：${dayElem} ｜ カラー：<code>${luckyColor}</code></p>
-        <div class="daily">この色を“身につける／画面に映す／メモに引く”と整いやすい。</div>
+      <div class="row">
+        <div class="dots">
+          <span class="sw" style="background:${luckyColor}"></span>
+          <span class="sw" style="background:${luckyColor}90"></span>
+          <span class="sw" style="background:${luckyColor}55"></span>
+        </div>
+        <div class="meta"><b>カラー</b><code>${luckyColor}</code>（五行：${dayElem}）</div>
       </div>
     </div>
+    <div class="daily color-explain">
+      五行に基づいて、その日の「巡り」を整える色です。<br>
+      色は飾りではなく、心と環境の“調律キー”。必要なら身につける／画面に映す／ノートに一筆でOK。
+    </div>
+    <ul class="color-legend">
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#2ecc71"></span><span class="sw" style="background:#27ae60"></span><span class="sw" style="background:#1abc9c"></span>
+      </div><div class="meta"><b>木：</b>#2ecc71 — 成長・発展・優しさ。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#e74c3c"></span><span class="sw" style="background:#ff7a59"></span><span class="sw" style="background:#e67e22"></span>
+      </div><div class="meta"><b>火：</b>#e74c3c — 行動・情熱・勇気。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#f1c40f"></span><span class="sw" style="background:#f39c12"></span><span class="sw" style="background:#d4a373"></span>
+      </div><div class="meta"><b>土：</b>#f1c40f — 安定・整える力。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#ecf0f1"></span><span class="sw" style="background:#d4af37"></span><span class="sw" style="background:#bdc3c7"></span>
+      </div><div class="meta"><b>金：</b>#ecf0f1 — 洗練・手放し・磨く。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#3498db"></span><span class="sw" style="background:#2980b9"></span><span class="sw" style="background:#34495e"></span>
+      </div><div class="meta"><b>水：</b>#3498db — つながり・巡り。</div></div></li>
+    </ul>
   </section>
 
   <section><h2>🪐 宙の天気（干支×五行）</h2><div class="daily">${esc(weatherMsg)}</div></section>
   <section><h2>📅 週間の宙便り</h2><div class="daily">${esc(weeklyMsg)}</div></section>
   <section><h2>🌗 今月のリズム</h2><div class="daily">${esc(monthlyMsg)}</div></section>
-
-  <section>
-    <h2>🌠 干支ランキング</h2>
-    <!-- ランキングは HTML をそのまま入れる（エスケープしない） -->
-    ${rankingHTML}
-  </section>
-
-  <section>
-    <h2>🌸 今日の運勢カラーとは</h2>
-    <div class="daily">
-      <p>五行に基づいて、その日の「巡り」を整える色です。</p>
-      <p>色はただの飾りではなく、心と環境の“調律キー”。</p>
-      ${colorLegendHTML()}
-    </div>
-  </section>
+  <section><h2>🌠 干支ランキング</h2>${rankingBlock}</section>
 </main>
 
 <footer>© 心灯 – 宙のリズム占い</footer>
@@ -401,4 +335,4 @@ else{gain.gain.setTargetAtTime(0.06,ctx.currentTime,1.2);btn.dataset.playing='1'
 </body></html>`;
 
 writeFileSync("index.html", html, "utf8");
-console.log("index.html generated ✔");
+console.log("index.html generated ✅");
