@@ -317,6 +317,27 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 .color-legend .meta b{ margin-right:.35em; }
 @media (max-width:420px){ .color-legend .row{ align-items:flex-start; } .color-legend .dots{ min-width:66px; } }
 @media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
+/* ===== 昼モードの文字見やすさ調整 ===== */
+body.day {
+  color: #222;
+}
+body.day section {
+  background: #f9f9fb;
+  color: #333;
+  border-color: #ccc;
+}
+body.day h2 {
+  color: #111;
+  border-left-color: #e5b800;
+}
+body.day .rank-card {
+  background: #fff;
+  border-color: #ddd;
+}
+body.day .rank-body .rank-copy { color: #444; }
+body.day .rank-meta { color: #666; }
+body.day footer { color: #555; }
+body.day code { color: #555; background:#efefef; padding:2px 4px; border-radius:4px; }
 </style></head>
 <body class="${bodyClass}">
 <header>
