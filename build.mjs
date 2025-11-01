@@ -242,17 +242,45 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 .rank-card p{margin:.35em 0 0;line-height:1.6}
 .rank-card .meta{color:#9aa0bf;font-size:.92rem}
 
-/* ===== 🌸 今日の運勢カラー レジェンド（行間詰め） ===== */
-.color-legend{ list-style:none; padding:0; margin:8px 0 0 0;}
-.color-legend li{ background:#0f0f16; border:1px solid #222; border-radius:12px; padding:8px 12px; margin:8px 0;}
-.color-legend .row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-.color-legend .dots{ display:flex; gap:6px; align-items:center }
-.color-legend .sw{ width:18px; height:18px; border-radius:50%; box-shadow:0 0 12px var(--lucky); }
-.color-legend .meta b{ margin-right:4px}
-.color-explain{ line-height:1.7; margin:10px 0 2px 0; color:#cfd3ff}
-@media (max-width:420px){ .color-legend .row{ gap:8px } }
-@media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
+/* ===== 🌸 今日の運勢カラー（可読性強化版） ===== */
+.color-legend li {
+  background: #0f0f16;
+  border: 1px solid #292939;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  color: #dce0f8; /* ← 全体をやや明るく */
+  box-shadow: 0 0 6px rgba(0,0,0,.35);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.color-legend .meta b {
+  color: #ffffff; /* 五行名を明るく */
+  font-weight: 600;
+}
+.color-legend .meta {
+  color: #cbd1ee; /* 補足テキストを少し明るく */
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+.color-legend .sw {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--lucky);
+}
 
+/* 昼モードでは文字色を少し抑える */
+body.day .color-legend li {
+  background: #fff;
+  border-color: #ddd;
+  color: #333;
+}
+body.day .color-legend .meta b {
+  color: #111;
+}
+body.day .color-legend .meta {
+  color: #555;
+}
 /* ===== 昼モード見やすさ（文字・カード・枠） ===== */
 body.day{ color: var(--ink-day); }
 body.day section{ background: var(--card-day); color: var(--ink-day); border-color: var(--card-day-border); }
