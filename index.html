@@ -42,30 +42,24 @@ footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
 .color-card{display:flex;align-items:center;gap:12px;background:#0f0f16;border:1px solid #222;padding:12px;border-radius:10px}
 .swatch{width:28px;height:28px;border-radius:50%;background:var(--lucky);box-shadow:0 0 10px var(--lucky)}
 .kicker{color:#bbb;margin:0}
-
-/* ランキングの雑誌カード風 */
-.rank-list{display:grid;grid-template-columns:1fr;gap:12px}
-.rank-item{background:#0f0f16;border:1px solid #23232e;border-radius:10px;padding:12px}
-.rank-item .no{font-weight:700;letter-spacing:.02em;color:#dfe3ff;margin-bottom:.25rem}
-.rank-item .lead{margin:.2rem 0 .3rem}
-.rank-item .meta{color:#9aa4c2;margin:.1rem 0 0;font-size:.92rem}
-@media (min-width:560px){ .rank-list{grid-template-columns:1fr 1fr} }
-@media (min-width:900px){ .rank-list{grid-template-columns:1fr 1fr 1fr} }
-
-@media (prefers-reduced-motion: reduce){ ... }
-
-/* ===== 🌸今日の運勢カラー 説明の読みやすさ調整 ===== */
-section h2 { margin-bottom: 0.5em; }
-section .daily p,
-section .daily ul,
-section .daily li {
-  line-height: 1.5 !important;
-  margin: 0.3em 0 !important;
-}
-section .daily ul { padding-left: 1.2em; }
-
+/* ===== ランキング（雑誌カード風） ===== */
+.rank-card{display:grid;grid-template-columns:58px 1fr 56px;gap:10px;align-items:center;background:#0f0f16;border:1px solid #222;border-radius:12px;padding:12px;margin:10px 0}
+.rank-no{font-weight:700;color:#fff;background:linear-gradient(180deg,var(--accent),#333);border-radius:10px;text-align:center;padding:6px 0}
+.rank-body .rank-title{font-weight:700;margin-bottom:4px}
+.rank-body .rank-copy{margin:.2em 0 .2em;color:#ddd}
+.rank-meta{color:#aab}
+.rank-score{font-weight:800;font-size:1.2rem;text-align:right;color:#ffd86b}
+/* ===== 🌸 今日の運勢カラー レジェンド ===== */
+.color-legend{ list-style:none; padding:0; margin:12px 0 4px; }
+.color-legend li{ background:#0f0f16; border:1px solid #222; border-radius:12px; padding:10px 12px; margin:10px 0; }
+.color-legend .row{ display:flex; align-items:center; gap:12px; }
+.color-legend .dots{ display:flex; gap:6px; min-width:84px; }
+.color-legend .sw{ width:18px; height:18px; border-radius:50%; background:var(--c); box-shadow:0 0 10px var(--c,transparent); display:inline-block; }
+.color-legend .meta b{ margin-right:.35em; }
+@media (max-width:420px){ .color-legend .row{ align-items:flex-start; } .color-legend .dots{ min-width:66px; } }
+@media (prefers-reduced-motion: reduce){ .moon{animation:none} .ripple::before,.ripple::after{animation:none} .stars{animation:none} }
 </style></head>
-<body class="night">
+<body class="day">
 <header>
   <div class="sky">
     <div class="stars"></div>
@@ -105,43 +99,196 @@ section .daily ul { padding-left: 1.2em; }
 開運アクション：やることを3つに絞る（片づけ／連絡／ご褒美）
 五行：水
 </div></section>
-  <section><h2>📅 週間の宙便り</h2><div class="daily">総評：芽を伸ばす“調律週間”。小さな成長を積み重ねて。
-月相：ゆるく満ち欠け。心身のリズムに耳を。
-鍵：連絡・整頓・深呼吸</div></section>
-  <section><h2>🌗 今月のリズム</h2><div class="daily">季節：秋
-方針：仕上げと収穫。記録と振り返りが財産に。
-五行ヒント：木（伸びる力）：ストレッチ・学び日和。</div></section>
+  <section><h2>📅 週間の宙便り</h2><div class="daily">【総評】
+芽を伸ばす“調律週間”。小さな成長を積み重ねて。
+
+【月相メモ】
+半月期。バランス調整にツキ。仕上げは週末◎
+
+【開運アクション】
+・連絡の滞りを1つ解消
+・机の上を5分だけ整える
+・深呼吸を3回（朝/昼/夜）
+
+【キーワード】
+調整／連絡／仕上げ
+</div></section>
+  <section><h2>🌗 今月のリズム</h2><div class="daily">【季節テーマ】
+仕上げと収穫。記録と振り返りが財産に。
+
+【方針】
+“増やす前に整える”。不要を1つ手放して、必要を1つ磨く。
+
+【五行ヒント】
+金（磨く力）：衣食住の“質”を1点更新。道具を手入れすると運が通る。
+
+【おすすめデー】
+・第2週の中盤：発信◎
+・満月前後：仕上げ／公開◎
+</div></section>
 
   <section>
     <h2>🌠 干支ランキング</h2>
-    <!-- ランキングはHTMLとして挿入（エスケープしない） -->
-    <article class="rank-item"><div class="no">#1 子（ね）</div><p>小さな整頓が大飛躍に直結。</p><p class="meta">ラッキー：チェックリスト／炭酸水／ネイビー</p></article>
-<article class="rank-item"><div class="no">#2 辰（たつ）</div><p>温めてきた企画をそっと世に。</p><p class="meta">ラッキー：下書き→公開／白いシャツ</p></article>
-<article class="rank-item"><div class="no">#3 申（さる）</div><p>橋渡し役で評価UP。第三者紹介◎。</p><p class="meta">ラッキー：名刺・プロフィール整備／グレー</p></article>
-<article class="rank-item"><div class="no">#4 酉（とり）</div><p>最後のひと磨きで完成度UP。</p><p class="meta">ラッキー：クロスで拭く／メタリック小物</p></article>
-<article class="rank-item"><div class="no">#5 丑（うし）</div><p>腰を据えるほど効率化。</p><p class="meta">ラッキー：作業用手袋／ブラウン</p></article>
-<article class="rank-item"><div class="no">#6 卯（うさぎ）</div><p>静かな場所で集中力MAX。</p><p class="meta">ラッキー：図書館の隅／ミント</p></article>
-<article class="rank-item"><div class="no">#7 亥（いのしし）</div><p>直球よりワンクッションが吉。</p><p class="meta">ラッキー：試供・サンプル／ボルドー</p></article>
-<article class="rank-item"><div class="no">#8 寅（とら）</div><p>主導権は握りつつ、着地はソフトに。</p><p class="meta">ラッキー：アロマミスト／ブラック</p></article>
-<article class="rank-item"><div class="no">#9 未（ひつじ）</div><p>“できる範囲”宣言で信頼UP。</p><p class="meta">ラッキー：付箋／ライトベージュ</p></article>
-<article class="rank-item"><div class="no">#10 巳（へび）</div><p>言い過ぎ注意。クッション言葉を。</p><p class="meta">ラッキー：“もしよければ”／ボタニカル柄</p></article>
-<article class="rank-item"><div class="no">#11 午（うま）</div><p>予定を詰めすぎない。</p><p class="meta">ラッキー：スニーカー／ターコイズ</p></article>
-<article class="rank-item"><div class="no">#12 戌（いぬ）</div><p>先に充電→夕方挽回。</p><p class="meta">ラッキー：甘い紅茶／アイボリー</p></article>
-
+    <!-- ランキングは HTML をそのまま入れる（エスケープしない） -->
+    
+    <article class="rank-card">
+      <div class="rank-no">#1</div>
+      <div class="rank-body">
+        <div class="rank-title">🐭 子（ね）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：炭酸水／散歩／ネイビー</p>
+      </div>
+      <div class="rank-score">96</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#2</div>
+      <div class="rank-body">
+        <div class="rank-title">🐲 辰（たつ）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：整頓5分／ノート／ベージュ</p>
+      </div>
+      <div class="rank-score">92</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#3</div>
+      <div class="rank-body">
+        <div class="rank-title">🐵 申（さる）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：名刺・プロフィール／磨く作業／メタル色</p>
+      </div>
+      <div class="rank-score">90</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#4</div>
+      <div class="rank-body">
+        <div class="rank-title">🐰 卯（う）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：チェックリスト／グリーン／ストレッチ</p>
+      </div>
+      <div class="rank-score">88</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#5</div>
+      <div class="rank-body">
+        <div class="rank-title">🐮 丑（うし）</div>
+        <p class="rank-copy">3つ</p>
+        <p class="rank-meta">ラッキー：整頓5分／ノート／ベージュ</p>
+      </div>
+      <div class="rank-score">86</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#6</div>
+      <div class="rank-body">
+        <div class="rank-title">🐵 申（さる）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：名刺・プロフィール／磨く作業／メタル色</p>
+      </div>
+      <div class="rank-score">84</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#7</div>
+      <div class="rank-body">
+        <div class="rank-title">🐴 午（うま）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：赤系アクセ／発信・連絡／ガッツポーズ</p>
+      </div>
+      <div class="rank-score">82</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#8</div>
+      <div class="rank-body">
+        <div class="rank-title">🐗 亥（い）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：炭酸水／散歩／ネイビー</p>
+      </div>
+      <div class="rank-score">80</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#9</div>
+      <div class="rank-body">
+        <div class="rank-title">🐶 戌（いぬ）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：整頓5分／ノート／ベージュ</p>
+      </div>
+      <div class="rank-score">78</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#10</div>
+      <div class="rank-body">
+        <div class="rank-title">🐔 酉（とり）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：名刺・プロフィール／磨く作業／メタル色</p>
+      </div>
+      <div class="rank-score">76</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#11</div>
+      <div class="rank-body">
+        <div class="rank-title">🐑 未（ひつじ）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：整頓5分／ノート／ベージュ</p>
+      </div>
+      <div class="rank-score">74</div>
+    </article>
+  
+    <article class="rank-card">
+      <div class="rank-no">#12</div>
+      <div class="rank-body">
+        <div class="rank-title">🐍 巳（み）</div>
+        <p class="rank-copy"></p>
+        <p class="rank-meta">ラッキー：赤系アクセ／発信・連絡／ガッツポーズ</p>
+      </div>
+      <div class="rank-score">72</div>
+    </article>
+  
   </section>
-    <section><h2>🌸 今日の運勢カラーとは</h2>
+
+  <section>
+    <h2>🌸 今日の運勢カラーとは</h2>
     <div class="daily">
       <p>五行に基づいて、その日の「巡り」を整える色です。</p>
       <p>色はただの飾りではなく、心と環境の“調律キー”。</p>
-      <ul>
-        <li><b>木</b>：#2ecc71 — 成長・発展・優しさ。緑や青緑。</li>
-        <li><b>火</b>：#e74c3c — 行動・情熱・勇気。赤やオレンジ。</li>
-        <li><b>土</b>：#f1c40f — 安定・整える力。黄やベージュ。</li>
-        <li><b>金</b>：#ecf0f1 — 清らかさ・美意識。白や金銀色。</li>
-        <li><b>水</b>：#3498db — つながり・流れ・癒し。青や紺。</li>
-      </ul>
-      <p>身につける、目に入れる、意識する——それだけで、<br>
-      あなたの一日が“調和のリズム”に戻っていきます。</p>
+      <ul class="color-legend">
+      <li>
+        <div class="row">
+          <div class="dots"><span class="sw" style="--c:#2ecc71" title="#2ecc71"></span><span class="sw" style="--c:#27ae60" title="#27ae60"></span><span class="sw" style="--c:#1abc9c" title="#1abc9c"></span></div>
+          <div class="meta"><b>木</b>：<code>#2ecc71</code> — 成長・発展・優しさ</div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="dots"><span class="sw" style="--c:#e74c3c" title="#e74c3c"></span><span class="sw" style="--c:#ff7a59" title="#ff7a59"></span><span class="sw" style="--c:#e67e22" title="#e67e22"></span></div>
+          <div class="meta"><b>火</b>：<code>#e74c3c</code> — 行動・情熱・勇気</div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="dots"><span class="sw" style="--c:#f1c40f" title="#f1c40f"></span><span class="sw" style="--c:#f39c12" title="#f39c12"></span><span class="sw" style="--c:#d4a373" title="#d4a373"></span></div>
+          <div class="meta"><b>土</b>：<code>#f1c40f</code> — 安定・整える力</div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="dots"><span class="sw" style="--c:#d4af37" title="#d4af37"></span><span class="sw" style="--c:#c0c0c0" title="#c0c0c0"></span><span class="sw" style="--c:#ecf0f1" title="#ecf0f1"></span></div>
+          <div class="meta"><b>金</b>：<code>#d4af37</code> — 磨く・洗練・価値</div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="dots"><span class="sw" style="--c:#3498db" title="#3498db"></span><span class="sw" style="--c:#2980b9" title="#2980b9"></span><span class="sw" style="--c:#6c5ce7" title="#6c5ce7"></span></div>
+          <div class="meta"><b>水</b>：<code>#3498db</code> — 巡り・つながり</div>
+        </div>
+      </li></ul>
     </div>
   </section>
 </main>
