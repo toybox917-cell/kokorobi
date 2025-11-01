@@ -1,13 +1,342 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>心灯 | 宙のリズム占い</title>
-</head>
-<body>
-<h1>🪷 心灯 | 宙のリズム占い</h1>
-<p>このページはビルド成功テスト版です。</p>
-<p>動作確認が取れたら、完全版HTMLを差し替えます。</p>
-</body>
-</html>
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>心灯｜宙のリズム占い</title>
+<meta name="description" content="毎日の“宙の天気”とメッセージ。週占い・月占い・今日の色・干支ランキング（自動更新）。">
+<link rel="canonical" href="https://kokorobi.vercel.app/">
+<meta property="og:type" content="website"><meta property="og:title" content="心灯｜宙のリズム占い">
+<meta property="og:url" content="https://kokorobi.vercel.app/"><meta property="og:image" content="https://kokorobi.vercel.app/og.png">
+<meta name="theme-color" content="#2ecc71">
+<style>
+:root{ --accent:#cc7a42; --lucky:#2ecc71; --card:#12121a; --ink:#eaeaf2; --ink-soft:#cfd3ff; --ink-day:#222; --ink-day-soft:#333; --card-day:#f9f9fb; --card-day-border:#ccc; }
+*{box-sizing:border-box} body{margin:0;background:#0a0a12;color:var(--ink);font-family:"Hiragino Sans","Yu Gothic",system-ui,-apple-system,sans-serif}
+.sky{position:relative;text-align:center;padding:28px 14px 18px;overflow:hidden}
+body.day .sky{background:linear-gradient(135deg,#f7f3ff,#eaf7ff)}
+body.night .sky{background:radial-gradient(circle at 50% -10%,#23335a,#0b0f1a 60%)}
+.moon{width:92px;height:92px;margin:10px auto 6px;border-radius:50%;animation:breathe 5.5s ease-in-out infinite;position:relative;z-index:2}
+body.day .moon{background:radial-gradient(circle at 35% 35%,#ffe066,#f2c14e 60%,#b3862f 100%);box-shadow:0 0 26px rgba(255,214,82,.45)}
+body.night .moon{background:radial-gradient(circle at 35% 35%,#e6f0ff,#a8c2ff 60%,#6f86d6 100%);box-shadow:0 0 30px rgba(120,160,255,.40),0 0 60px rgba(120,160,255,.20)}
+@keyframes breathe{0%,100%{transform:scale(.96)}50%{transform:scale(1.06)}}
+.ripple{position:absolute;top:50%;left:50%;width:92px;height:92px;transform:translate(-50%,-50%);border-radius:50%;z-index:1;pointer-events:none}
+body.night .ripple::before, body.night .ripple::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(200,220,255,.35);animation:waveN 6s ease-in-out infinite}
+body.night .ripple::after{animation-delay:3s}
+@keyframes waveN{0%{transform:scale(1);opacity:.45}70%{opacity:.1}100%{transform:scale(3);opacity:0}}
+body.day .ripple::before, body.day .ripple::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,225,120,.40);box-shadow:0 0 20px rgba(255,210,90,.22) inset;animation:waveD 7.5s ease-in-out infinite}
+body.day .ripple::after{animation-delay:3.75s}
+.stars{position:absolute;inset:0;pointer-events:none;opacity:.22}
+body.night .stars{background:
+ radial-gradient(1px 1px at 10% 25%,#fff,transparent 60%),
+ radial-gradient(1px 1px at 22% 60%,#fff,transparent 60%),
+ radial-gradient(1px 1px at 45% 35%,#fff,transparent 60%),
+ radial-gradient(1px 1px at 70% 20%,#fff,transparent 60%),
+ radial-gradient(1px 1px at 80% 70%,#fff,transparent 60%),
+ radial-gradient(1px 1px at 60% 80%,#fff,transparent 60%);animation:twinkle 6s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.18}50%{opacity:.42}}
+.title{font-size:1.6rem;margin:.2em 0 .25em}
+.date,.info{margin:.2em 0 0}
+.btn-ghost{appearance:none;background:#1118;border:1px solid #333;color:#dfe3ff;padding:6px 10px;border-radius:999px;font-size:.9rem}
+main{max-width:820px;margin:22px auto;padding:0 16px}
+section{background:var(--card);border:1px solid #222;border-radius:12px;padding:16px;margin:16px 0;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+h2{margin:.2em 0 .6em;font-size:1.1rem;border-left:6px solid var(--accent);padding-left:.5em}
+.daily{white-space:pre-wrap;line-height:1.85}
+footer{text-align:center;color:#aaa;font-size:.85rem;margin:28px 0}
+
+/* ===== 雑誌カード風 ランキング ===== */
+.rank-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.rank-card{background:#0f0f16;border:1px solid #23232f;border-radius:10px;padding:12px}
+.rank-card .no{font-weight:700;margin-bottom:4px;color:var(--ink-soft)}
+.rank-card p{margin:.35em 0 0;line-height:1.6}
+.rank-card .meta{color:#9aa0bf;font-size:.92rem}
+
+/* ===== 🌸 今日の運勢カラー（可読性強化版） ===== */
+.color-card{
+  background:#0f0f16; border:1px solid #292939; border-radius:12px; padding:12px 14px; margin:8px 0 12px;
+}
+.color-card .row{ display:flex; align-items:center; gap:12px; }
+.color-card .dots{ display:flex; gap:8px; }
+.color-card code{ background:rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; }
+.color-legend{ list-style:none; padding:0; margin:10px 0 0; }
+.color-legend .row{ display:flex; align-items:center; gap:12px; }
+.color-legend .dots{ display:flex; gap:8px; }
+.color-explain{ line-height:1.9; }
+
+.color-legend li {
+  background: #0f0f16; border: 1px solid #292939; border-radius: 12px; padding: 10px 14px; margin: 10px 0;
+  color: #dce0f8; box-shadow: 0 0 6px rgba(0,0,0,.35);
+}
+.color-legend .meta b { color: #ffffff; font-weight: 600; }
+.color-legend .meta { color: #cbd1ee; font-size: .94rem; line-height: 1.6; }
+.color-legend .sw { width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 10px var(--lucky); }
+
+body.day .color-card{ background:#fff; border-color:#ddd; }
+body.day .color-card code{ background:#f1f3f5; color:#111; }
+body.day{ color: var(--ink-day); }
+body.day section{ background: var(--card-day); color: var(--ink-day); border-color: var(--card-day-border); }
+body.day h2{ border-left-color: var(--accent); color:#111 }
+body.day .daily{ color:#111; }
+body.day .rank-card{ background:#fff; border-color:#e6e6e6; }
+body.day .rank-card .meta{ color:#667 }
+body.day .color-legend li { background:#fff; border-color:#ddd; color:#333; }
+body.day .color-legend .meta b { color:#111; }
+body.day .color-legend .meta { color:#555; }
+body.day .color-explain{ color:#555 }
+
+/* ===== 🧭 クイック占い フォーム ===== */
+#quick-fortune form{ display:grid; gap:10px; grid-template-columns:1fr; }
+#quick-fortune label{ display:flex; flex-direction:column; gap:6px; font-size:.98rem; }
+#quick-fortune input{ appearance:none; border:1px solid #2a2a38; background:#0f0f16; color:#eaeaf2; border-radius:10px; padding:10px 12px; }
+body.day #quick-fortune input{ background:#fff; color:#111; border-color:#ddd; }
+#quick-fortune button{ justify-self:start; }
+#fOut{ background:#0f0f16; border:1px solid #23232f; border-radius:10px; padding:12px; }
+body.day #fOut{ background:#fff; border-color:#e6e6e6; color:#111; }
+</style></head>
+
+<body class="night">
+<header>
+  <div class="sky">
+    <div class="stars"></div>
+    <div class="ripple"></div>
+    <div class="moon" aria-hidden="true"></div>
+    <h1 class="title">心灯｜宙のリズム占い</h1>
+    <p class="date">本日：2025年11月2日（日）</p>
+    <p class="info">干支日：乙亥（五行：木）　今夜の月：🌔</p>
+    <button id="ambBtn" class="btn-ghost" type="button">宇宙の呼吸：OFF</button>
+  </div>
+</header>
+
+<main>
+  <section><h2>🌕 今日の灯</h2><div class="daily">今日の灯：
+小さな優しさが、誰かの宙を照らす日になりますように。
+
+今日の灯：
+宇宙は今日も、あなたを通して息づいています。比べず、焦らず。
+
+今日の灯：
+迷ったら“3つに絞る”。片づけ／連絡／ご褒美。
+</div></section>
+
+  <section><h2>🎨 今日の色</h2>
+    <div class="color-card">
+      <div class="row">
+        <div class="dots">
+          <span class="sw" style="background:#2ecc71"></span>
+          <span class="sw" style="background:#2ecc7190"></span>
+          <span class="sw" style="background:#2ecc7155"></span>
+        </div>
+        <div class="meta"><b>カラー</b><code>#2ecc71</code>（五行：木）</div>
+      </div>
+    </div>
+    <div class="daily color-explain">
+      五行に基づいて、その日の「巡り」を整える色です。<br>
+      色は飾りではなく、心と環境の“調律キー”。必要なら身につける／画面に映す／ノートに一筆でOK。
+    </div>
+    <ul class="color-legend">
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#2ecc71"></span><span class="sw" style="background:#27ae60"></span><span class="sw" style="background:#1abc9c"></span>
+      </div><div class="meta"><b>木：</b>#2ecc71 — 成長・発展・優しさ。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#e74c3c"></span><span class="sw" style="background:#ff7a59"></span><span class="sw" style="background:#e67e22"></span>
+      </div><div class="meta"><b>火：</b>#e74c3c — 行動・情熱・勇気。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#f1c40f"></span><span class="sw" style="background:#f39c12"></span><span class="sw" style="background:#d4a373"></span>
+      </div><div class="meta"><b>土：</b>#f1c40f — 安定・整える力。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#ecf0f1"></span><span class="sw" style="background:#d4af37"></span><span class="sw" style="background:#bdc3c7"></span>
+      </div><div class="meta"><b>金：</b>#ecf0f1 — 洗練・手放し・磨く。</div></div></li>
+      <li><div class="row"><div class="dots">
+        <span class="sw" style="background:#3498db"></span><span class="sw" style="background:#2980b9"></span><span class="sw" style="background:#34495e"></span>
+      </div><div class="meta"><b>水：</b>#3498db — つながり・巡り。</div></div></li>
+    </ul>
+  </section>
+
+  <!-- 🧭 生年月日クイック占い -->
+  <section id="quick-fortune">
+    <h2>🧭 生年月日でクイック占い</h2>
+    <form id="fForm" autocomplete="on">
+      <label>生年月日：
+        <input type="date" id="bday" required>
+      </label>
+      <label>誕生時間（任意）：
+        <input type="time" id="btime">
+      </label>
+      <label>お名前（任意）：
+        <input type="text" id="uname" placeholder="ニックネームOK">
+      </label>
+      <button class="btn-ghost" type="submit">占う</button>
+    </form>
+    <div id="fOut" class="daily" style="margin-top:12px;"></div>
+  </section>
+
+  <section><h2>🪐 宙の天気（干支×五行）</h2><div class="daily">🐀 子（ね）… 感性が鋭くひらめきの多い日  
+🐄 丑（うし）… 落ち着いた安定運  
+🐅 寅（とら）… 勢いと行動力がツキを呼ぶ  
+🐇 卯（う）… 優しさが伝わる日  
+…いつもありがとう♪</div></section>
+  <section><h2>📅 週間の宙便り</h2><div class="daily">【総評】
+芽を伸ばす“調律週間”。小さな成長を積み重ねて。
+
+【月相メモ】
+半月期。バランス調整にツキ。仕上げは週末◎
+
+【開運アクション】
+・連絡の滞りを1つ解消
+・机の上を5分だけ整える
+・深呼吸を3回（朝/昼/夜）
+
+【キーワード】
+調整／連絡／仕上げ</div></section>
+  <section><h2>🌗 今月のリズム</h2><div class="daily">【季節テーマ】
+仕上げと収穫。記録と振り返りが財産に。
+
+【方針】
+“増やす前に整える”。不要を1つ手放して、必要を1つ磨く。
+
+【五行ヒント】
+金（磨く力）：衣食住の“質”を1点更新。道具を手入れすると運が通る。
+
+【おすすめデー】
+・第2週の中盤：発信◎
+・満月前後：仕上げ／公開◎</div></section>
+  <section><h2>🌠 干支ランキング</h2><div class="rank-grid">
+  <article class="rank-card">
+    <div class="no">#1 寅（🐯）</div>
+    <p>焦らず整える日。</p>
+    <p class="meta">ラッキー：木の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#2 子（🐭）</div>
+    <p>ケジメで好転。切り替え力。</p>
+    <p class="meta">ラッキー：水の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#3 卯（🐰）</div>
+    <p>言葉選びを丁寧に。</p>
+    <p class="meta">ラッキー：木の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#4 申（🐵）</div>
+    <p>信用が運を連れてくる。</p>
+    <p class="meta">ラッキー：金の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#5 辰（🐲）</div>
+    <p>準備が勝ち。下地づくり。</p>
+    <p class="meta">ラッキー：土の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#6 未（🐑）</div>
+    <p>ひらめき好調。短期決戦◎</p>
+    <p class="meta">ラッキー：土の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#7 丑（🐮）</div>
+    <p>体調ケアで運気維持。</p>
+    <p class="meta">ラッキー：土の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#8 巳（🐍）</div>
+    <p>小さな優しさが大きな縁。</p>
+    <p class="meta">ラッキー：火の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#9 午（🐴）</div>
+    <p>勢いに乗れる。先手必勝。</p>
+    <p class="meta">ラッキー：火の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#10 亥（🐗）</div>
+    <p>情報運。まずは連絡から。</p>
+    <p class="meta">ラッキー：水の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#11 酉（🐔）</div>
+    <p>調和運。聞き役が吉。</p>
+    <p class="meta">ラッキー：金の気を入れる／小物１点</p>
+  </article>
+  <article class="rank-card">
+    <div class="no">#12 戌（🐶）</div>
+    <p>堅実運。積み上げに福。</p>
+    <p class="meta">ラッキー：土の気を入れる／小物１点</p>
+  </article></div></section>
+</main>
+
+<footer>© 心灯 – 宙のリズム占い</footer>
+
+<script>
+// 宇宙の呼吸（アンビエントON/OFF）
+(function(){var ctx,gain,osc,lfo,lfoGain;var btn=document.getElementById('ambBtn');
+function ensure(){if(ctx)return;var AC=window.AudioContext||window.webkitAudioContext;ctx=new AC();
+gain=ctx.createGain();gain.gain.value=0.0001;osc=ctx.createOscillator();osc.type='sine';osc.frequency.value=110;
+lfo=ctx.createOscillator();lfo.type='sine';lfo.frequency.value=0.08;lfoGain=ctx.createGain();lfoGain.gain.value=0.15;
+lfo.connect(lfoGain).connect(gain.gain);osc.connect(gain).connect(ctx.destination);osc.start();lfo.start();}
+btn.addEventListener('click',function(){ensure();if(ctx.state==='suspended'){ctx.resume();}
+var on=btn.dataset.playing==='1';if(on){gain.gain.setTargetAtTime(0.0001,ctx.currentTime,0.8);btn.dataset.playing='0';btn.textContent='宇宙の呼吸：OFF';}
+else{gain.gain.setTargetAtTime(0.06,ctx.currentTime,1.2);btn.dataset.playing='1';btn.textContent='宇宙の呼吸：ON';}});})();
+
+// ===== クイック占い（クライアント側軽量版） =====
+(function(){
+  function etoOf(y,m,d){
+    var T=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"], Z=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    var a=Math.floor((14-m)/12); y=y+4800-a; m=m+12*a-3;
+    var j=d+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
+    // 年干支は簡易（視感用）
+    return { year:T[(j+9)%10]+Z[(y-4800+a+8)%12], day:T[(j+9)%10]+Z[(j+1)%12] };
+  }
+  function elementFromStem(stem){
+    if("甲乙".indexOf(stem)!==-1) return "木";
+    if("丙丁".indexOf(stem)!==-1) return "火";
+    if("戊己".indexOf(stem)!==-1) return "土";
+    if("庚辛".indexOf(stem)!==-1) return "金";
+    return "水";
+  }
+  var branchEmoji={子:"🐭",丑:"🐮",寅:"🐯",卯:"🐰",辰:"🐲",巳:"🐍",午:"🐴",未:"🐑",申:"🐵",酉:"🐔",戌:"🐶",亥:"🐗"};
+  var order=["木","火","土","金","水"];
+  function genNext(e){return order[(order.indexOf(e)+1)%5];}
+  function genPrev(e){return order[(order.indexOf(e)+4)%5];}
+  function luckyColorByElement(elem, wd){
+    var colors={"木":["#2ecc71","#27ae60","#1abc9c"],"火":["#e74c3c","#ff7a59","#e67e22"],"土":["#f1c40f","#f39c12","#d4a373"],"金":["#ecf0f1","#d4af37","#bdc3c7"],"水":["#3498db","#2980b9","#34495e"]};
+    var list=colors[elem]||colors["水"]; return list[wd%list.length];
+  }
+  function moonEmoji(date){
+    var syn=29.530588853, base=new Date(Date.UTC(2000,0,6,18,14));
+    var diff=(date-base)/86400000, ph=((diff%syn)+syn)%syn;
+    if(ph<1.5)return"🌑"; if(ph<6)return"🌒"; if(ph<8)return"🌓"; if(ph<14)return"🌔";
+    if(ph<16)return"🌕"; if(ph<21)return"🌖"; if(ph<23)return"🌗"; return"🌘";
+  }
+
+  var form=document.getElementById('fForm'); if(!form) return;
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var d=document.getElementById('bday').value; if(!d) return;
+    var nm=(document.getElementById('uname').value||'あなた').trim();
+    var dt=new Date(d+"T00:00:00");
+    var y=dt.getFullYear(), m=dt.getMonth()+1, day=dt.getDate();
+
+    var ed=etoOf(y,m,day);
+    var yearStem = ed.year.charAt(0), yearBranch = ed.year.charAt(1);
+    var birthElem = elementFromStem(yearStem);
+    var birthEmoji = branchEmoji[yearBranch] || "";
+    var today = new Date();
+    var todayEto = etoOf(today.getFullYear(), today.getMonth()+1, today.getDate()).day;
+    var todayElem = elementFromStem(todayEto.charAt(0));
+
+    var compat="△";
+    if(birthElem===todayElem) compat="◎";
+    else if(genNext(birthElem)===todayElem || genPrev(birthElem)===todayElem) compat="○";
+
+    var col = luckyColorByElement(birthElem, today.getDay());
+    var moon = moonEmoji(new Date());
+    var moonHint = (/🌕/.test(moon)?"仕上げ＆発信に◎":(/🌑/.test(moon)?"静かに始動。宣言吉。":(/🌓|🌗/.test(moon)?"バランス調整。":"ゆるく巡りに乗る日。")));
+
+    var out = "";
+    out += "【基本】"+nm+"の年干支："+ed.year+"（"+birthEmoji+"）／五行："+birthElem+"\n";
+    out += "【今日との相性】今日の五行："+todayElem+" → 相性："+compat+"\n";
+    out += "【今日の色】"+col+"\n";
+    out += "【月相】"+moon+" ひとこと："+moonHint+"\n\n";
+    out += "ヒント：\n";
+    out += "・"+(birthElem==="木"?"のびのび“1つだけ”増やす":"要らないものを1つ手放す")+"\n";
+    out += "・連絡／整頓／深呼吸 の“3点セット”で運の通り道を作る";
+    document.getElementById('fOut').textContent = out;
+  });
+})();
+</script>
+</body></html>
