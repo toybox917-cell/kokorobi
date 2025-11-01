@@ -202,6 +202,32 @@ const html = `<!DOCTYPE html><html lang="ja"><head>
 <meta property="og:url" content="https://kokorobi.vercel.app/"><meta property="og:image" content="https://kokorobi.vercel.app/og.png">
 <meta name="theme-color" content="${luckyColor}">
 <style>
+/* ===== 🎨 今日の色・レイアウト補完 ===== */
+/* 先頭の1枚カード */
+.color-card{
+  background:#0f0f16;
+  border:1px solid #292939;
+  border-radius:12px;
+  padding:12px 14px;
+  margin:8px 0 12px;
+}
+.color-card .row{ display:flex; align-items:center; gap:12px; }
+.color-card .dots{ display:flex; gap:8px; }
+.color-card code{ 
+  background:rgba(255,255,255,.08); 
+  padding:2px 6px; border-radius:6px; 
+}
+/* 昼モードのトーン */
+body.day .color-card{ background:#fff; border-color:#ddd; }
+body.day .color-card code{ background:#f1f3f5; color:#111; }
+
+/* リスト（木・火・土・金・水）の容器と行間 */
+.color-legend{ list-style:none; padding:0; margin:10px 0 0; }
+.color-legend .row{ display:flex; align-items:center; gap:12px; }
+.color-legend .dots{ display:flex; gap:8px; }
+
+/* 説明文の行間（画像の“文字がちょい詰まる”を解消） */
+.color-explain{ line-height:1.9; }
 :root{ --accent:${seasonColor}; --lucky:${luckyColor}; --card:#12121a; --ink:#eaeaf2; --ink-soft:#cfd3ff; --ink-day:#222; --ink-day-soft:#333; --card-day:#f9f9fb; --card-day-border:#ccc; }
 *{box-sizing:border-box} body{margin:0;background:#0a0a12;color:var(--ink);font-family:"Hiragino Sans","Yu Gothic",system-ui,-apple-system,sans-serif}
 .sky{position:relative;text-align:center;padding:28px 14px 18px;overflow:hidden}
