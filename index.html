@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>心灯（こころび）プロジェクト | 理で導き、優しさで包む</title>
+  <meta name="description" content="心灯（こころび）プロジェクト。理で導き、優しさで包む。占命×メッセージ×行動で“優しさの連鎖”を広げる実践型コミュニティ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#0f172a;        /* 深い群青（文字） */
+      --amber:#f59e0b;      /* 心灯の灯色 */
+      --rose:#fda4af;       /* アクセント（控えめ） */
+      --cloud:#f8fafc;      /* 下地 */
+      --card:#ffffff;       /* カード面 */
+      --muted:#475569;      /* 補足文字 */
+      --ring:rgba(245,158,11,.25);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ink:#e2e8f0;
+        --cloud:#0b1020;
+        --card:#0f1528;
+        --muted:#94a3b8;
+        --ring:rgba(245,158,11,.35);
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--cloud);color:var(--ink);font-family:"Noto Sans JP",system-ui, -apple-system, sans-serif;line-height:1.7}
+    a{color:var(--amber);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1080px;margin:0 auto;padding:0 20px}
+    header{position:sticky;top:0;backdrop-filter:blur(8px);background:color-mix(in oklab, var(--cloud) 85%, transparent);border-bottom:1px solid color-mix(in oklab,var(--ink) 12%, transparent);z-index:50}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo{width:28px;height:28px;border-radius:8px;background: radial-gradient(120% 120% at 30% 20%, #fff 0%, var(--amber) 35%, #b45309 75%);box-shadow:0 0 0 4px var(--ring)}
+    .nav a.btn{padding:8px 14px;border:1px solid color-mix(in oklab, var(--ink) 18%, transparent);border-radius:10px}
+    .hero{padding:64px 0 36px}
+    .hero h1{font-size:clamp(28px,3.2vw,44px);line-height:1.2;margin:0 0 10px}
+    .hero p.lead{font-size:clamp(16px,2.2vw,20px);color:var(--muted);margin:0 0 18px}
+    .cta{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;border:none;cursor:pointer;background:var(--amber);color:#1b1100;font-weight:700}
+    .btn.secondary{background:transparent;border:1px solid color-mix(in oklab, var(--ink) 18%, transparent);color:var(--ink)}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:880px){.grid{grid-template-columns:1fr 1fr}}
+    section{padding:28px 0}
+    .card{background:var(--card);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:16px;padding:18px;box-shadow:0 6px 20px color-mix(in oklab, var(--ink) 6%, transparent)}
+    h2{font-size:clamp(22px,2.4vw,28px);margin:0 0 12px}
+    h3{font-size:18px;margin:0 0 8px}
+    .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;color:var(--amber);font-weight:700;margin-bottom:6px}
+    ul.clean{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+    .pillars{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:880px){.pillars{grid-template-columns:repeat(3,1fr)}}
+    .pillar{border-left:4px solid var(--amber);padding-left:12px}
+    .mono{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+    .muted{color:var(--muted)}
+    .foot{padding:30px 0 60px;color:var(--muted);font-size:14px}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;background:color-mix(in oklab,var(--ink) 6%,transparent);padding:2px 6px;border-radius:6px;border:1px solid color-mix(in oklab,var(--ink) 14%, transparent)}
+    .inline-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:color-mix(in oklab,var(--amber) 20%, transparent);font-size:12px}
+    .divider{height:1px;background:color-mix(in oklab,var(--ink) 10%, transparent);margin:18px 0}
+  </style>
+</head>
+<body>
+<header>
+  <div class="container nav" aria-label="サイトナビゲーション">
+    <div class="brand" aria-label="心灯ロゴと名称">
+      <span class="logo" aria-hidden="true"></span>
+      <span>心灯（こころび）プロジェクト</span>
+    </div>
+    <nav class="navlinks" aria-label="主要リンク">
+      <a class="btn" href="#request">鑑定リクエスト</a>
+      <a class="btn secondary" href="#join">参加方法</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero container">
+    <span class="kicker">理で導き、優しさで包む</span>
+    <h1>占命 × ことば × 行動で、<br>“優しさの連鎖”を育てる。</h1>
+    <p class="lead">心灯（こころび）は、干支・五行をベースに「生まれた意味」「今の位置」「これからの使命」を静かに照らし、日々の一歩を整える実践コミュニティです。</p>
+    <div class="cta">
+      <a class="btn" href="#today" aria-label="今日の心灯メッセージへ">今日の心灯</a>
+      <a class="btn secondary" href="#about" aria-label="心灯について読む">心灯とは</a>
+    </div>
+  </section>
+
+  <section id="about" class="container grid" aria-label="心灯の説明">
+    <div class="card">
+      <h2>心灯（こころび）とは</h2>
+      <p>占いは「当てる道具」ではなく、<span class="inline-badge">心を調律する技</span>。<br>才田流では、次の四層であなたを読み解きます。</p>
+      <ul class="clean">
+        <li>① <b>命</b> — 生まれ持った音（干支・五行）</li>
+        <li>② <b>心</b> — 今鳴っている音（年運・月運）</li>
+        <li>③ <b>縁</b> — 響き合う音（人・出来事）</li>
+        <li>④ <b>運</b> — 流れてくる風（タイミング）</li>
+      </ul>
+      <div class="divider"></div>
+      <p class="muted">合言葉は「理で導き、優しさで包む」。結果を決めつけず、可能性をひらく“可能性占命”です。</p>
+    </div>
+
+    <div class="card">
+      <h2>三つの柱</h2>
+      <div class="pillars">
+        <div class="pillar">
+          <h3>灯をともす（言葉）</h3>
+          <p class="muted">短い一言で、心の温度を1℃上げる。毎日の「心灯メッセージ」を配信。</p>
+        </div>
+        <div class="pillar">
+          <h3>灯を広げる（行動）</h3>
+          <p class="muted">挨拶・感謝・見守り。小さな実践を“連鎖”に変える。</p>
+        </div>
+        <div class="pillar">
+          <h3>灯を調える（対話）</h3>
+          <p class="muted">月例の“心の調律会”で、今月の運と学びを分かち合う。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="today" class="container" aria-label="今日の心灯メッセージ">
+    <div class="card">
+      <span class="kicker">今日の心灯</span>
+      <h2 id="todays-title">静かな光を、そっと置く。</h2>
+      <p id="todays-body" class="muted">読み込み中…</p>
+      <div class="divider"></div>
+      <small class="muted mono" id="todays-date"></small>
+    </div>
+  </section>
+
+  <section id="format" class="container grid" aria-label="鑑定フォーマット">
+    <div class="card">
+      <h2>鑑定フォーマット（心灯・静穏版）</h2>
+      <ol class="clean">
+        <li><b>生まれた意味</b> — あなたの命の音。</li>
+        <li><b>今の位置</b> — 心の季節と風向き。</li>
+        <li><b>これからの使命</b> — あなたが灯す光。</li>
+        <li><b>締めの詩</b> — 理と優しさの一行。</li>
+      </ol>
+      <p class="muted">※ 決めつけず、可能性を開くことを大切にします。</p>
+    </div>
+
+    <div id="request" class="card" aria-label="鑑定リクエスト">
+      <h2>鑑定リクエスト</h2>
+      <p class="muted">以下を入力して送信してください。折り返しご連絡します。</p>
+      <form aria-label="鑑定フォーム" onsubmit="event.preventDefault();alert('送信ありがとうございます。折り返しご連絡いたします。');">
+        <label>お名前<br><input type="text" required placeholder="例）才田 一輝" style="width:100%;padding:10px;border-radius:10px;border:1px solid color-mix(in oklab,var(--ink) 18%, transparent)"></label><br><br>
+        <label>生年月日（西暦）<br><input type="date" required style="width:100%;padding:10px;border-radius:10px;border:1px solid color-mix(in oklab,var(--ink) 18%, transparent)"></label><br><br>
+        <label>ご相談の主題（任意）<br><input type="text" placeholder="例）今の位置とこれからの使命" style="width:100%;padding:10px;border-radius:10px;border:1px solid color-mix(in oklab,var(--ink) 18%, transparent)"></label><br><br>
+        <button class="btn" type="submit">送信する</button>
+      </form>
+      <p class="muted" style="margin-top:10px;">※ このフォームはデモです。実運用では外部フォーム/メールに接続してください。</p>
+    </div>
+  </section>
+
+  <section id="join" class="container grid" aria-label="参加方法">
+    <div class="card">
+      <h2>参加方法</h2>
+      <ul class="clean">
+        <li><b>① 毎朝の心灯を読む：</b> 今日の一言を生活に一音。</li>
+        <li><b>② 小さな実践：</b> 挨拶・ありがとう・見守りを一回。</li>
+        <li><b>③ 調律会に参加：</b> 月一で心の季節をわかち合う。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>ガイドライン</h2>
+      <ul class="clean">
+        <li>否定より承認。結論より対話。</li>
+        <li>秘密は守る。境界を尊重する。</li>
+        <li>“理と優しさ”を両輪に。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="container" aria-label="心灯の詩">
+    <div class="card">
+      <h2>心灯の詩</h2>
+      <p class="muted">理があなたを導き、優しさがあなたを包む。<br>
+      光と影の間にこそ、真の美しさは生まれる。<br>
+      今日もどうか、自分を責めず、あなたという光を静かに灯していてください。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot container" aria-label="フッター">
+  <div>© <span id="y"></span> 心灯（こころび）プロジェクト・才田流占命</div>
+  <div class="muted">Made with quiet care. / お問い合わせは管理者まで。</div>
+</footer>
+
+<script>
+  // 今日の心灯メッセージ（静穏トーン）
+  const MESSAGES = [
+    {t:"静かな光を、そっと置く。",b:"結論を急がず、相手の呼吸に耳を澄ませてみる。言葉の間に、優しさは宿ります。"},
+    {t:"比べず、たしかめる。",b:"他人との比較ではなく、昨日の自分と静かに握手する。小さな一歩が最良の調律です。"},
+    {t:"“ありがとう”の最短距離。",b:"長い説明より短い感謝を。ひとことで、空気はやさしく変わります。"},
+    {t:"守るより、整える。",b:"正しさを押すより、心の姿勢を整える。理と優しさが同じ方向を向くとき、道がひらく。"},
+    {t:"沈黙も、対話の一部。",b:"言えない想いは、言葉になる途中。待つ時間が、信頼を育てます。"},
+    {t:"余白を残す。",b:"完璧に伝えようとしない。余白があるから、相手の光が差し込める。"},
+    {t:"今日の自分に敬意を。",b:"できたことを数える。足りない所は、未来の自分に渡して大丈夫。"}
+  ];
+  function hashDate(d){
+    // 安定した“日替わり”を作る: YYYYMMDDを数値化して配列選択
+    const s = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    let h = 0; for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i))>>>0; }
+    return h;
+  }
+  (function init(){
+    const now = new Date();
+    document.getElementById('y').textContent = now.getFullYear();
+    document.getElementById('todays-date').textContent = new Intl.DateTimeFormat('ja-JP-u-ca-japanese',{dateStyle:'full'}).format(now);
+    const pick = MESSAGES[ hashDate(now) % MESSAGES.length ];
+    document.getElementById('todays-title').textContent = pick.t;
+    document.getElementById('todays-body').textContent = pick.b;
+  })();
+</script>
+</body>
+</html>
