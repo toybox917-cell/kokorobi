@@ -2,112 +2,38 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>心灯フォーチュン</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🌕</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>心灯フォーチュン | 宙のリズム占い</title>
   <style>
-    :root{
-      --bg1:#0e0f1a;       /* 深い宙 */
-      --bg2:#1c2040;       /* 群青 */
-      --acc:#ffd76b;       /* 心灯の金色 */
-      --card:#101425cc;    /* 半透明カード */
-      --text:#e9ecf3;      /* 文字 */
-      --sub:#b9c1d9;       /* サブ文字 */
-      --btn:#ffd76b;
-      --btnText:#3b2f08;
+    body {
+      background: linear-gradient(180deg, #0b0f26, #1c2040);
+      color: #fff;
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      text-align: center;
+      padding: 40px 20px;
     }
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg1:#fbfaf7;
-        --bg2:#f2efe9;
-        --card:#ffffffee;
-        --text:#222;
-        --sub:#555;
-        --btn:#d6a400;
-        --btnText:#fff;
-      }
+    h1 {
+      font-size: 1.6em;
+      margin-bottom: 0.5em;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:"Noto Sans JP", system-ui, -apple-system, sans-serif;
-      color:var(--text);
-      background: radial-gradient(1200px 800px at 70% -10%, #3a3f7a55, transparent),
-                  linear-gradient(160deg, var(--bg1), var(--bg2));
-      background-attachment: fixed;
-      display:grid; place-items:center; padding:24px;
+    .button {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background: #ffd95e;
+      color: #222;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
     }
-    .wrap{width:min(920px,100%); display:grid; gap:16px}
-    header{
-      display:flex; align-items:center; gap:12px;
-      padding:6px 0 2px;
-    }
-    .moon{font-size:28px}
-    .ttl{font-weight:700; letter-spacing:.03em; font-size:22px}
-    .sub{color:var(--sub); font-size:13px}
-    .card{
-      background:var(--card);
-      border:1px solid #ffffff1a;
-      border-radius:16px;
-      padding:20px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 24px #0006, inset 0 1px 0 #ffffff12;
-    }
-    .hero{
-      display:grid; gap:10px; text-align:center; padding:28px 14px;
-      background:linear-gradient(180deg,#ffffff08,transparent);
-      border-radius:14px;
-    }
-    .hero h1{margin:0; font-size:24px; letter-spacing:.02em}
-    .hero p{margin:4px 0 0; color:var(--sub)}
-    .row{display:grid; gap:12px}
-    @media (min-width:700px){ .row{grid-template-columns:1fr 1fr} }
-    .btns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px}
-    .btn{
-      background:var(--btn); color:var(--btnText);
-      font-weight:700; letter-spacing:.02em;
-      border:none; border-radius:999px; padding:12px 18px;
-      box-shadow:0 6px 16px #0005, inset 0 1px 0 #fff7;
-      text-decoration:none; display:inline-flex; align-items:center; gap:6px;
-    }
-    .btn:active{transform:translateY(1px)}
-    footer{margin-top:8px; text-align:center; color:var(--sub); font-size:12px}
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <div class="moon">🌕</div>
-      <div>
-        <div class="ttl">心灯フォーチュン</div>
-        <div class="sub">理で導き、優しさで包む — 宙のリズム占い</div>
-      </div>
-    </header>
-
-    <section class="card hero">
-      <h1>今日の光を受け取ろう</h1>
-      <p>ただいま初期設定中です。下のボタンは後で本体ページに繋がります。</p>
-      <div class="btns">
-        <a class="btn" href="./result.html">🔮 今日の運勢</a>
-        <a class="btn" href="./compat.html">💞 相性診断</a>
-        <a class="btn" href="./about.html">🌿 心灯について</a>
-      </div>
-    </section>
-
-    <section class="row">
-      <div class="card">
-        <h3>やさしいデザイン</h3>
-        <p class="sub">心が休まる色調と、宙のグラデーション。読みやすさ優先で整えています。</p>
-      </div>
-      <div class="card">
-        <h3>モバイル最適</h3>
-        <p class="sub">iPhoneの片手操作を想定。タップしやすいボタンと自動レイアウト。</p>
-      </div>
-    </section>
-
-    <footer>© 心灯プロジェクト</footer>
-  </main>
+  <h1>🌕 心灯フォーチュン</h1>
+  <p>理で導き、優しさで包む ─ 宙のリズム占い</p>
+  <h2>今日の光を受け取ろう</h2>
+  <a href="#" class="button">🔮 今日の運勢</a>
+  <a href="#" class="button">💕 相性診断</a>
+  <a href="#" class="button">🌿 心灯について</a>
 </body>
 </html>
