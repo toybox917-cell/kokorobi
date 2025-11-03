@@ -2,91 +2,86 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌕心灯フォーチュン</title>
-  <meta name="description" content="理で導き、優しさで包む ─ 宙のリズム占い 心灯フォーチュン" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>心灯フォーチュン — 宙のリズム占い</title>
 
-  <!-- 🌟 Google AdSense 認証コード（削除しないでください） -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4612456578380647"
-       crossorigin="anonymous"></script>
+  <!-- AdSense（サイト確認＆自動広告）※重複しないように1回だけ -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4612456578380647" crossorigin="anonymous"></script>
 
   <style>
-    body {
-      font-family: "Hiragino Sans", "Noto Sans JP", sans-serif;
-      background: linear-gradient(to bottom, #0a0830, #0d0b45);
-      color: white;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    :root{
+      --bg:#0d1230;
+      --card:#ffe07a;
+      --shadow:0 14px 30px rgba(0,0,0,.25);
+      --text:#f6f7ff;
     }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;}
+    .wrap{max-width:720px;margin:0 auto;padding:32px 18px 72px;}
+    h1{font-size:clamp(28px,6vw,44px);margin:12px 0 8px;display:flex;align-items:center;gap:.5rem}
+    .sub{opacity:.85;margin:0 0 28px;font-size:clamp(14px,3.5vw,16px);}
+    .btn{display:block;width:min(520px,100%);margin:18px auto;padding:18px 22px;border:none;border-radius:999px;background:var(--card);color:#2b1c00;font-weight:700;font-size:clamp(16px,4.5vw,20px);box-shadow:var(--shadow);text-align:center;text-decoration:none}
+    .btn:active{transform:translateY(1px)}
+    footer{margin-top:56px;opacity:.85;text-align:center;font-size:13px}
 
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-
-    p {
-      margin: 0.3rem 0 2rem;
-      font-size: 0.9rem;
-    }
-
-    .button {
-      display: block;
-      background: #ffda57;
-      color: #222;
-      padding: 14px 28px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 1rem;
-      box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
-      margin: 12px 0;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .button:hover {
-      background: #ffe173;
-      transform: scale(1.05);
-    }
-
-    footer {
-      position: fixed;
-      bottom: 10px;
-      width: 100%;
-      font-size: 0.8rem;
-      color: #aaa;
-    }
+    /* 広告まわり（安全に余白をとる） */
+    .ad-wrap{max-width:680px;margin:22px auto 6px;padding:8px 0}
+    .ad-label{font-size:12px;opacity:.6;margin:0 0 6px 6px}
+    /* 768px以上では広告の上下に少し余白を追加 */
+    @media (min-width:768px){ .ad-wrap{margin:28px auto 10px} }
   </style>
 </head>
-
 <body>
-  <main>
-    <h1>🌕心灯フォーチュン</h1>
-    <p>理で導き、優しさで包む ─ 宙のリズム占い</p>
+  <main class="wrap">
+    <h1>🌕 心灯フォーチュン</h1>
+    <p class="sub">理で導き、優しさで包む — 宙のリズム占い</p>
 
-    <a href="fortune.html" class="button">🔮 今日の運勢</a>
-    <a href="match.html" class="button">💕 相性診断</a>
-    <a href="about.html" class="button">🌿 心灯について</a>
+    <!-- ボタン群 -->
+    <a class="btn" href="/#today">🔮 今日の運勢</a>
+    <a class="btn" href="/#pair">💕 相性診断</a>
+    <a class="btn" href="/about.html">🌿 心灯について</a>
 
-    <!-- 🌸 Google AdSense広告エリア -->
-    <ins class="adsbygoogle"
-        style="display:block; text-align:center;"
-        data-ad-client="ca-pub-4612456578380647"
-        data-ad-slot="1234567890"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <!-- ◆広告①：ボタン群の直下（おすすめ） -->
+    <div class="ad-wrap">
+      <div class="ad-label">スポンサーリンク</div>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-4612456578380647"
+           data-ad-slot="XXXXXXXXXX"   <!-- ← ここをあなたの SLOT_ID に置換 -->
+           data-ad-format="auto"
+           data-full-width-responsive="true"
+           data-adtest="off"
+           loading="lazy"></ins>
+    </div>
+
+    <!-- ここに本文やお知らせ等が増えてもOK -->
+
+    <!-- ◆広告②：フッター直前（セカンド枠） -->
+    <div class="ad-wrap">
+      <div class="ad-label">スポンサーリンク</div>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-4612456578380647"
+           data-ad-slot="YYYYYYYYYY"   <!-- ← 2つ目の SLOT_ID -->
+           data-ad-format="auto"
+           data-full-width-responsive="true"
+           data-adtest="off"
+           loading="lazy"></ins>
+    </div>
+
+    <footer>© 2025 心灯プロジェクト — 優しさの連鎖 🌕</footer>
   </main>
 
-  <footer>
-    © 2025 心灯プロジェクト — 優しさの連鎖 🌕
-  </footer>
+  <!-- 手動広告の実行（ページ末尾に1回でOK） -->
+  <script>
+    // 自動広告はスクリプト読込だけでOK。手動枠は push() が必要。
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.adsbygoogle && document.querySelector('.adsbygoogle')) {
+        document.querySelectorAll('.adsbygoogle').forEach(() => {
+          try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
+        });
+      }
+    });
+  </script>
+  <noscript>広告を表示するにはJavaScriptを有効にしてください。</noscript>
 </body>
 </html>
