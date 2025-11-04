@@ -1,0 +1,63 @@
+<!doctype html><html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>画像入れ替えパネル｜心灯フォーチュン</title>
+<style>
+:root{--bg:#0e1a2b;--ink:#f4f2ec;--gold:#ffd780;--card:#111a2c}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
+header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08)}h1{margin:0;font-size:18px}
+main{max-width:1100px;margin:0 auto;padding:12px 16px}
+.tips{font-size:14px;opacity:.9;line-height:1.7;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px}
+.grid{display:grid;gap:12px;margin-top:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/9;background:#000;display:grid;place-items:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.meta{padding:10px 12px;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,.06)}
+.page{font-weight:600}.btns{display:flex;gap:8px;margin-left:auto}
+a.btn{appearance:none;text-decoration:none;background:rgba(255,255,255,.06);color:var(--ink);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 10px}
+footer{opacity:.7;font-size:12px;text-align:center;padding:16px}.warn{color:#ffd780}
+</style></head><body>
+<header><h1>画像入れ替えパネル｜心灯フォーチュン</h1></header>
+<main>
+  <div class="tips">
+    画像フォルダ：<code>/images/</code> ／ 担当ページ数：<b>6</b><br>
+    GitHubで <b>Add file → Upload files</b>（置き換えはドラッグでOK）→ <b>Commit changes</b><br>
+    <span class="warn">横長（16:9推奨）。ファイル名は <code>page01.jpg</code>〜。</span><br>
+    サイトを見る： <a class="btn" target="_blank" href="https://kokorobi.vercel.app">kokorobi.vercel.app</a> /
+    GitHub： <a class="btn" target="_blank" href="https://github.com/toybox917-cell/kokorobi-fortune-web">Repository</a>
+  </div>
+  <div id="grid" class="grid"></div>
+</main>
+<footer>© Kokorobi Project</footer>
+
+<script>
+const SITE = {
+  live:'https://kokorobi.vercel.app',
+  owner:'toybox917-cell',
+  repo:'kokorobi-fortune-web',
+  branch:'main',
+  imageBase:'/images/',
+  pageCount:6,
+  ext:'jpg'
+};
+const grid=document.getElementById('grid');
+for(let i=1;i<=SITE.pageCount;i++){
+  const n=String(i).padStart(2,'0');
+  const fn=`page${n}.${SITE.ext}`;
+  const raw=`${SITE.live}${SITE.imageBase}${fn}`;
+  const gh =`https://github.com/${SITE.owner}/${SITE.repo}/blob/${SITE.branch}${SITE.imageBase}${fn}`.replace('//','/').replace('https:/','https://');
+  const el=document.createElement('div');el.className='card';
+  el.innerHTML=`
+    <div class="thumb"><img src="${raw}" alt="${fn}" loading="lazy"
+      onerror="this.src='data:image/svg+xml;utf8,${encodeURIComponent(svgNF(fn))}'"></div>
+    <div class="meta"><span class="page">${fn}</span>
+      <div class="btns">
+        <a class="btn" target="_blank" href="${raw}">見る</a>
+        <a class="btn" target="_blank" href="${gh}">GitHub</a>
+      </div>
+    </div>`;
+  grid.appendChild(el);
+}
+function svgNF(name){return `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450'>
+  <rect width='100%' height='100%' fill='#0a0a0a'/><text x='50%' y='55%' fill='#ffd780' font-size='22' text-anchor='middle' font-family='sans-serif'>${name} が見つかりません</text></svg>`;}
+</script>
+</body></html>
