@@ -1,32 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>お問い合わせ | 心灯フォーチュン</title>
-<style>
-  body{font-family:system-ui,-apple-system,Helvetica,Arial,sans-serif;line-height:1.8;margin:24px;background:#0e1230;color:#eef;}
-  a{color:#ffd166;} main{max-width:900px;margin:0 auto}
-  form{background:#14183d;border:1px solid #2b2f57;border-radius:12px;padding:20px}
-  input,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #2b2f57;background:#0f1340;color:#eef}
-  button{padding:12px 18px;border:0;border-radius:999px;background:#ffd166;color:#222;font-weight:700}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>お問い合わせ | 心灯フォーチュン</title>
+  <meta name="description" content="心灯フォーチュンへのご意見・ご相談はこちらから。">
+  <link rel="icon" href="og.png">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4612456578380647" crossorigin="anonymous"></script>
+  <style>
+    :root{--bg:#0e1230;--text:#f5f7ff;--muted:#c8ccdd;--brand:#ffd666}
+    *{box-sizing:border-box} body{margin:0;background:#0e1230;color:var(--text);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;line-height:1.75}
+    .wrap{max-width:960px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;background:linear-gradient(180deg,#0e1230 70%,transparent)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px}
+    .nav a:hover{background:#1b214b;color:#fff}
+    h1{font-size:1.9rem;margin:18px 0}
+    .panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;margin:14px 0}
+    label{display:block;margin:.6rem 0 .2rem}
+    input,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:#0f1436;color:#fff}
+    textarea{min-height:140px;resize:vertical}
+    .btn{display:inline-block;margin-top:12px;background:linear-gradient(180deg,#ffd666,#f4c24b);color:#2a2300;font-weight:800;border:none;border-radius:12px;padding:12px 18px}
+    .note{color:var(--muted);font-size:.9rem}
+    footer{color:var(--muted);font-size:.85rem;text-align:center;margin:40px 0 16px}
+  </style>
 </head>
 <body>
-<main>
-  <h1>お問い合わせ</h1>
-  <p>不具合やご感想など、お気軽にお送りください。</p>
-  <!-- 簡易メール送信：mailto（運用しやすいSNSリンクでも可） -->
-  <form action="mailto:your-mail@example.com" method="post" enctype="text/plain">
-    <label>お名前</label>
-    <input type="text" name="name" required>
-    <label>メールアドレス</label>
-    <input type="email" name="email" required>
-    <label>内容</label>
-    <textarea name="message" rows="7" required></textarea>
-    <button type="submit">送信する</button>
-  </form>
-  <p style="margin-top:12px;">※うまく送信できない場合は <a href="mailto:your-mail@example.com">こちら</a> から直接どうぞ。</p>
-  <p><a href="/">← トップへ戻る</a></p>
+<header class="wrap">
+  <nav class="nav">
+    <div style="font-weight:700">🌕 心灯フォーチュン</div>
+    <div>
+      <a href="index.html">ホーム</a>
+      <a href="about.html">心灯について</a>
+      <a href="mechanism.html">占いの仕組み</a>
+      <a href="contact.html">お問い合わせ</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+  <h1>💌 お問い合わせ</h1>
+  <section class="panel">
+    <!-- 簡易メールリンク版（当面これでOK / 後でフォーム化も可能） -->
+    <p class="note">お急ぎの方はメールで：<br>
+      <a href="mailto:info@example.com?subject=%E5%BF%83%E7%81%AF%E3%83%95%E3%82%A9%E3%83%BC%E3%83%81%E3%83%A5%E3%83%B3%E3%81%B8%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B">info@example.com</a>
+    </p>
+  </section>
+
+  <section class="panel">
+    <form name="contact" method="POST" data-netlify="true">
+      <input type="hidden" name="form-name" value="contact">
+      <label>お名前</label>
+      <input name="name" required placeholder="心灯 太郎">
+      <label>メールアドレス</label>
+      <input type="email" name="email" required placeholder="you@example.com">
+      <label>内容</label>
+      <textarea name="message" placeholder="ご用件をご記入ください。"></textarea>
+      <button class="btn" type="submit">送信する</button>
+      <p class="note">※ 送信後の返信まで時間をいただく場合があります。</p>
+    </form>
+  </section>
 </main>
+
+<footer>© 2025 心灯プロジェクト — 優しさの連鎖 🌕</footer>
 </body>
 </html>
