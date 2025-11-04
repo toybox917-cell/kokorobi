@@ -1,36 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>心灯について | 心灯フォーチュン</title>
-<style>
-  body{font-family:system-ui,-apple-system,Helvetica,Arial,sans-serif;line-height:1.8;margin:24px;background:#0e1230;color:#eef;}
-  a{color:#ffd166;} main{max-width:900px;margin:0 auto}
-  section{background:#14183d;border:1px solid #2b2f57;border-radius:12px;padding:20px;margin:16px 0}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>心灯について | 心灯フォーチュン</title>
+  <meta name="description" content="心灯（こころび）プロジェクトの理念とストーリー。理で導き、優しさで包む。">
+  <link rel="icon" href="og.png">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4612456578380647" crossorigin="anonymous"></script>
+  <style>
+    :root{--bg:#0e1230;--panel:#121638;--text:#f5f7ff;--muted:#c8ccdd;--brand:#ffd666}
+    *{box-sizing:border-box} body{margin:0;background:#0e1230;color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;line-height:1.75}
+    .wrap{max-width:960px;margin:0 auto;padding:20px}
+    a{color:#cfe1ff}
+    header{position:sticky;top:0;background:linear-gradient(180deg,#0e1230 70%,transparent);z-index:10}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px}
+    .nav a:hover{background:#1b214b;color:var(--text)}
+    h1{font-size:1.9rem;margin:18px 0}
+    .lead{color:var(--muted)}
+    .panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;margin:14px 0}
+    .badge{background:linear-gradient(180deg,#ffd666,#f4c24b);color:#2a2300;padding:.3rem .7rem;border-radius:.8rem;font-weight:800;display:inline-block}
+    footer{color:var(--muted);font-size:.85rem;text-align:center;margin:40px 0 16px}
+  </style>
 </head>
 <body>
-<main>
-  <h1>心灯（こころび）について</h1>
-  <section>
-    <h2>サイトの目的</h2>
-    <p>「理で導き、優しさで包む」。干支×五行の流れを用いて、毎日の“心の光”を見つける実践型の占いサイトです。</p>
+<header class="wrap">
+  <nav class="nav">
+    <div style="font-weight:700">🌕 心灯フォーチュン</div>
+    <div>
+      <a href="index.html">ホーム</a>
+      <a href="about.html">心灯について</a>
+      <a href="mechanism.html">占いの仕組み</a>
+      <a href="contact.html">お問い合わせ</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+  <h1>🌿 心灯（こころび）について</h1>
+  <p class="lead">心灯は、「<strong>理で導き、優しさで包む</strong>」を理念に、干支と五行のリズムで心の状態を“やさしく見える化”するプロジェクトです。</p>
+
+  <section class="panel">
+    <div class="badge">ビジョン</div>
+    <p>一人の優しさが連鎖し、世界の温度を少し上げる。占い・言葉・行動の三本柱で、毎日に小さな光を灯します。</p>
   </section>
-  <section>
-    <h2>運営者</h2>
+
+  <section class="panel">
+    <div class="badge">プロダクト</div>
     <ul>
-      <li>運営者名：<strong>才田 一輝（ハンドルネーム可）</strong></li>
-      <li>連絡先：<a href="/contact.html">お問い合わせフォーム</a></li>
-      <li>所在地：日本（都道府県レベルでOK）</li>
+      <li>🔮 <strong>今日の運勢</strong> — 宙の天気（干支×五行）をやさしく提示</li>
+      <li>💕 <strong>相性診断</strong> — 2人のリズムを重ね、可能性ベースで解説</li>
+      <li>🌈 <strong>心灯メッセージ</strong> — そっと背中を押す短い言葉</li>
     </ul>
   </section>
-  <section>
-    <h2>リンク</h2>
-    <ul>
-      <li><a href="/privacy.html">プライバシーポリシー</a></li>
-      <li><a href="/">トップページ</a></li>
-    </ul>
+
+  <section class="panel">
+    <div class="badge">クリエイティブの核</div>
+    <p>世界観は「<em>心を直せるのは、心しかない</em>」。物語やデザイン、文章のトーンまで一貫させ、落ち着いた光のサイトを目指しています。</p>
   </section>
+
+  <p><a href="mechanism.html">→ 占いの仕組みを読む</a></p>
 </main>
+
+<footer>© 2025 心灯プロジェクト — 優しさの連鎖 🌕</footer>
 </body>
 </html>
