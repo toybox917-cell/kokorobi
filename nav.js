@@ -1,10 +1,11 @@
 <script>
 // --- 心灯サイト共通リンク設定（ここだけ直せば3サイトが連動）---
 window.KOKOROBI_SITES = {
-  project: "https://YOUR-project.vercel.app",
-  fortune: "https://YOUR-fortune.vercel.app",
-  books:   "https://YOUR-books.vercel.app"
+  project: "https://kokorobi-project.vercel.app",
+  fortune: "https://kokorobi-fortune-web.vercel.app",
+  books:   "https://kokorobi-books.vercel.app"
 };
+
 
 // 共通ナビを生成
 function kokorobiNav(active) {
