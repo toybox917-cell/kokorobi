@@ -1,68 +1,29 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>占いの仕組み | 心灯フォーチュン</title>
-  <meta name="description" content="干支×五行のリズムで“今”の流れを読み解く心灯フォーチュンの仕組み。">
-  <link rel="icon" href="og.png">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4612456578380647" crossorigin="anonymous"></script>
-  <style>
-    :root{--bg:#0e1230;--panel:#121638;--text:#f5f7ff;--muted:#c8ccdd}
-    *{box-sizing:border-box} body{margin:0;background:#0e1230;color:var(--text);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;line-height:1.75}
-    .wrap{max-width:960px;margin:0 auto;padding:20px}
-    header{position:sticky;top:0;background:linear-gradient(180deg,#0e1230 70%,transparent)}
-    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px}
-    .nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px}
-    .nav a:hover{background:#1b214b;color:#fff}
-    h1{font-size:1.9rem;margin:18px 0}
-    .panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;margin:14px 0}
-    .grid{display:grid;gap:14px}@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-    footer{color:#c8ccdd;font-size:.85rem;text-align:center;margin:40px 0 16px}
-    code{background:#0f1436;padding:.2em .4em;border-radius:.4em}
-  </style>
-</head>
-<body>
-<header class="wrap">
-  <nav class="nav">
-    <div style="font-weight:700">🌕 心灯フォーチュン</div>
-    <div>
-      <a href="index.html">ホーム</a>
-      <a href="about.html">心灯について</a>
-      <a href="mechanism.html">占いの仕組み</a>
-      <a href="contact.html">お問い合わせ</a>
-    </div>
-  </nav>
-</header>
-
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>占いの仕組み | 心灯フォーチュン</title>
+<link rel="icon" href="og.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4612456578380647" crossorigin="anonymous"></script>
+<style>/* 同じCSS */ :root{--bg:#0e1230;--panel:#121638;--text:#f5f7ff;--muted:#c8ccdd}
+*{box-sizing:border-box}body{margin:0;background:#0e1230;color:var(--text);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Meiryo",sans-serif;line-height:1.7}
+.wrap{max-width:960px;margin:auto;padding:20px} header{position:sticky;top:0;background:#0e1230cc;backdrop-filter:saturate(140%) blur(8px)}
+.nav{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:10px 4px 8px}
+.nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px}.nav a:hover{background:#1b214b;color:#fff}
+h1{margin:.6rem 0 1rem}.panel{background:#ffffff08;border:1px solid #ffffff18;border-radius:16px;padding:20px}
+footer{color:var(--muted);font-size:.85rem;text-align:center;margin:40px 0 16px}
+</style></head><body>
+<header class="wrap"><nav class="nav"><div>🌕 心灯フォーチュン</div>
+<div><a href="index.html">ホーム</a><a href="about.html">心灯について</a><a href="mechanism.html">占いの仕組み</a><a href="generator.html">今日の運勢</a><a href="contact.html">お問い合わせ</a></div></nav></header>
 <main class="wrap">
-  <h1>🔮 占いの仕組み</h1>
-
-  <section class="panel">
-    <h2>1. 干支 × 五行のリズム</h2>
-    <p>十干（甲乙丙丁…）と十二支（子丑寅…）の組み合わせで時の“音色”を表現。木・火・土・金・水の五行バランスから、<strong>その日の向き・過ごし方のヒント</strong>を出します。</p>
-  </section>
-
-  <section class="panel grid">
-    <div>
-      <h3>2. 可能性ベースの解釈</h3>
-      <p>心灯は「決めつけない」スタイル。凶吉の断定ではなく、<em>活かし方</em>を提案します。例：<br>
-      「火が強い日 → 体温が上がりやすい。短時間の集中に◎、水（クールダウン）を意識」</p>
-    </div>
-    <div>
-      <h3>3. 相性の見方</h3>
-      <p>二人の要素を重ね、重なる点（安心）と補い合う点（成長）を整理。関係性のリズムを季節のように捉えます。</p>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>データと更新</h2>
-    <p>暦データをもとに日次で生成。サイトでは将来的にAPI/スクリプトでの自動更新にも対応予定です（例：<code>build.mjs</code>）。</p>
-  </section>
-
-  <p><a href="generator.html">→ 今日の運勢を見る</a></p>
+<h1>占いの仕組み</h1>
+<div class="panel">
+  <h3>① 干支と十干</h3>
+  <p>年や日付の“干（こう）”と“支（し）”の組合せ（十干十二支）から、巡りの基調を読みます。</p>
+  <h3>② 五行（木・火・土・金・水）</h3>
+  <p>干（十干）に対応する五行を用い、今日との相性・整え方・ラッキーカラーを導きます。</p>
+  <h3>③ 月相</h3>
+  <p>新月〜満月のどの局面かで「始める／整える／仕上げる」のリズムを示します。</p>
+  <p>※ 本サービスは娯楽・セルフケア目的の「可能性ベース」の提案です。医療・法律・投資助言ではありません。</p>
+</div>
 </main>
-
-<footer>© 2025 心灯プロジェクト — 優しさの連鎖 🌕</footer>
-</body>
-</html>
+<footer>© 2025 心灯プロジェクト</footer>
+</body></html>
